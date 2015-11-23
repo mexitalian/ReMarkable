@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Bookmark Roulette",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "Resurrect forgotten bookmarks to fit a free time slot.",
+    "description": "The description of the application"
+  }
+}
