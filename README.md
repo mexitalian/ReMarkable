@@ -1,29 +1,21 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+The initial setup of the extension is done using [chrome-extension Yeoman generator.](https://github.com/yeoman/generator-chrome-extension)
+[ES2015 can be used](https://babeljs.io/docs/learn-es2015/), please read the generator's [Readme](https://github.com/yeoman/generator-chrome-extension/blob/master/readme.md) for info about the tooling.
 
 ### What is this repository for? ###
+For the long lost bookmarks that may never be seen again. The intention is to have a tool to resurrect them when a moments break presents itself.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+Further down the line I would like to build out the functionality a little more to aid with
+* Organise your bookmarks one roulette at a time, delete those that you no longer care to have.
+* Mark the bookmarks you have seen and do not want to come back via roulette.
+* Tbc…
 
 ### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* See the Yeoman readme (link above).
 
-### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+### If you would like to contribute ###
 
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+* Feel free to get in touch
