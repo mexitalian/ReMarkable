@@ -16,14 +16,14 @@ let currentMillis = today.getMilliseconds()
 */
 ;
 var TIME_PERIOD = 180000; // 3 * 60 * 1000;
-var timePeriod = TIME_PERIOD;
 var TIME_DECR = 1000;
-// const AMBER_PERIOD = 120000; // 2 min
-// const RED_PERIOD = 60000; // 1 min
+var AMBER_PERIOD = 120000; // 2 min
+var RED_PERIOD = 60000; // 1 min
+var COLORS = {
+  GREEN: '#00CC00', AMBER: '#FFC200', RED: '#FF0000'
+};
 
-// const GREEN = '#00CC00';
-// const AMBER = '#FFC200';
-// const RED = '#FF0000';
+var timePeriod = TIME_PERIOD;
 
 function millToTime(millis) {
   // to seconds
@@ -35,19 +35,13 @@ function millToTime(millis) {
   return mins + ':' + remainingSecs;
 }
 
-// function onTabRemove(tabID) {
-//     if (tabID === currentTab.id)
-//     {
-
-//     }
-// }
-
 chrome.runtime.onInstalled.addListener(function (details) {
   console.log('previousVersion', details.previousVersion);
 });
 
 /*
     Run everytime a bookmark is launched
+    ------------------------------------
 */
 chrome.runtime.onMessage.addListener(function (request /*, sender*/) {
 
@@ -55,6 +49,22 @@ chrome.runtime.onMessage.addListener(function (request /*, sender*/) {
 
   var currentTab = undefined;
   var countdownID = undefined;
+  var initialColor = undefined;
+
+  initialColor = timePeriod > AMBER_PERIOD ? 'GREEN' : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
+
+  chrome.browserAction.setBadgeBackgroundColor({ color: COLORS[initialColor] });
+
+  if (timePeriod > AMBER_PERIOD) {
+    setTimeout(function () {
+      chrome.browserAction.setBadgeBackgroundColor({ color: COLORS.AMBER });
+    }, timePeriod - AMBER_PERIOD);
+  }
+  if (timePeriod > RED_PERIOD) {
+    setTimeout(function () {
+      chrome.browserAction.setBadgeBackgroundColor({ color: COLORS.RED });
+    }, timePeriod - RED_PERIOD);
+  }
 
   chrome.tabs.create({ url: request.redirect }, function (tab) {
     console.log(tab);
@@ -80,27 +90,6 @@ chrome.runtime.onMessage.addListener(function (request /*, sender*/) {
     }
   }, TIME_DECR);
 });
-
-/*
-// Setup initial badge state and callbacks
-chrome.browserAction.setBadgeText({text: millToTime(timePeriod)});
-
-if(timePeriod > AMBER_PERIOD)
-{  
-  chrome.browserAction.setBadgeBackgroundColor({color: GREEN});
-  setTimeout(function() { chrome.browserAction.setBadgeBackgroundColor({color: AMBER}); }, AMBER_PERIOD);
-  setTimeout(function() { chrome.browserAction.setBadgeBackgroundColor({color: RED}); }, RED_PERIOD);
-}
-else if (timePeriod > RED_PERIOD)
-{
-  chrome.browserAction.setBadgeBackgroundColor({color: AMBER});
-  setTimeout(function() { chrome.browserAction.setBadgeBackgroundColor({color: RED}); }, RED_PERIOD);
-}
-else
-{
-  chrome.browserAction.setBadgeBackgroundColor({color: RED});
-}
-*/
 
 // console.log('\'Allo \'Allo! Event Page for Browser Action');
 //# sourceMappingURL=background.js.map
