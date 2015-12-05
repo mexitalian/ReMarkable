@@ -1,6 +1,6 @@
 'use strict';
 
-var realBookmarks = [];
+let realBookmarks = [];
 
 function filterBookmarks(bookmarks) {
 
@@ -32,6 +32,10 @@ function getRandomMark() {
     }
 }
 
+function minsToMillis(mins) {
+  return mins * 60 * 1000;
+}
+
 // function justOne(bookmarks) {
 //   while ( true ) {
 
@@ -47,9 +51,15 @@ function getRandomMark() {
 document.getElementById('get-bookmarks').addEventListener('click', function() {
   // chrome.bookmarks.getTree(getRandomMark);
   let mark = getRandomMark();
+  let mins = Math.round( document.getElementById('mins').value );
+
   console.log(mark.url);
-  chrome.runtime.sendMessage({redirect: mark.url});
+
+  chrome.runtime.sendMessage({
+    redirect: mark.url,
+    millis: minsToMillis(mins)
+  });
 });
 
-
 chrome.bookmarks.getTree(filterBookmarks);
+

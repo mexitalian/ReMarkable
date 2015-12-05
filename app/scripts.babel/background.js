@@ -15,16 +15,13 @@
 let startTime = new Date.now();
 let currentMillis = today.getMilliseconds()
 */
-const TIME_PERIOD = 180000; // 3 * 60 * 1000;
+// const TIME_PERIOD = 180000; // 3 * 60 * 1000;
 const TIME_DECR = 1000;
 const AMBER_PERIOD = 120000; // 2 min
 const RED_PERIOD = 60000; // 1 min
 const COLORS = {
   GREEN: '#00CC00', AMBER: '#FFC200', RED: '#FF0000'
 };
-
-let timePeriod = TIME_PERIOD;
-
 
 function millToTime(millis) {
   // to seconds
@@ -49,11 +46,13 @@ chrome.runtime.onMessage.addListener(function(request/*, sender*/) {
 
   console.log(request);
 
+  let timePeriod = request.millis;
   let currentTab;
   let countdownID;
   let initialColor;
 
-  initialColor = timePeriod > AMBER_PERIOD ? 'GREEN' : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
+  initialColor = timePeriod > AMBER_PERIOD ? 'GREEN' 
+    : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
 
   chrome.browserAction.setBadgeBackgroundColor({color: COLORS[initialColor] });
 
@@ -69,12 +68,12 @@ chrome.runtime.onMessage.addListener(function(request/*, sender*/) {
     currentTab = tab;
   });
 
-  chrome.tabs.onRemoved.addListener(function(tabID) {
+  chrome.tabs.onRemoved.addListener( tabID => {
     if (tabID === currentTab.id)
     {
-      timePeriod = TIME_PERIOD;
+      // timePeriod = TIME_PERIOD;
       clearInterval(countdownID);
-      chrome.browserAction.setBadgeText({ text: ''});
+      chrome.browserAction.setBadgeText({ text: '' });
     }
   });
 
