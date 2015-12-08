@@ -1,21 +1,14 @@
 'use strict'
 
 /*
-    TODOs
-    =====
-    
-    At the moment this works for one tab only
-
-    [ ] Track which tabs were opened and have timers set per–tab
-
-*/
-
-/*
 let startTime = new Date.now();
 let currentMillis = today.getMilliseconds()
 */
-// const TIME_PERIOD = 180000; // 3 * 60 * 1000;
+
 ;
+
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+
 var TIME_DECR = 1000;
 var AMBER_PERIOD = 120000; // 2 min
 var RED_PERIOD = 60000; // 1 min
@@ -23,9 +16,14 @@ var COLORS = {
   GREEN: '#00CC00', AMBER: '#FFC200', RED: '#FF0000'
 };
 
-function millToTime(millis) {
+var currentTab = undefined;
+var countdownID = undefined;
+var bookmarkData = undefined;
+var tabRemovedByExtension = undefined;
+
+function msToTime(ms) {
   // to seconds
-  var secs = Math.floor(millis / 1000);
+  var secs = Math.floor(ms / 1000);
   var mins = Math.floor(secs / 60);
   var remainingSecs = secs % 60 + '';
   remainingSecs = remainingSecs.length === 2 ? remainingSecs : '0' + remainingSecs;
@@ -33,24 +31,10 @@ function millToTime(millis) {
   return mins + ':' + remainingSecs;
 }
 
-chrome.runtime.onInstalled.addListener(function (details) {
-  console.log('previousVersion', details.previousVersion);
-});
+function openBookmark() {
 
-/*
-    Run everytime a bookmark is launched
-    ------------------------------------
-*/
-chrome.runtime.onMessage.addListener(function (request /*, sender*/) {
-
-  console.log(request);
-
-  var timePeriod = request.millis;
-  var currentTab = undefined;
-  var countdownID = undefined;
-  var initialColor = undefined;
-
-  initialColor = timePeriod > AMBER_PERIOD ? 'GREEN' : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
+  var timePeriod = bookmarkData.millis;
+  var initialColor = timePeriod > AMBER_PERIOD ? 'GREEN' : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
 
   chrome.browserAction.setBadgeBackgroundColor({ color: COLORS[initialColor] });
 
@@ -65,30 +49,53 @@ chrome.runtime.onMessage.addListener(function (request /*, sender*/) {
     }, timePeriod - RED_PERIOD);
   }
 
-  chrome.tabs.create({ url: request.redirect }, function (tab) {
+  chrome.tabs.create({ url: bookmarkData.redirect }, function (tab) {
     console.log(tab);
     currentTab = tab;
-  });
-
-  chrome.tabs.onRemoved.addListener(function (tabID) {
-    if (tabID === currentTab.id) {
-      // timePeriod = TIME_PERIOD;
-      clearInterval(countdownID);
-      chrome.browserAction.setBadgeText({ text: '' });
-    }
   });
 
   // Initialise timer
   countdownID = setInterval(function () {
 
     timePeriod -= TIME_DECR;
-    chrome.browserAction.setBadgeText({ text: millToTime(timePeriod) });
+    chrome.browserAction.setBadgeText({ text: msToTime(timePeriod) });
 
     if (timePeriod === 0) {
       chrome.tabs.remove(currentTab.id);
+      clearInterval(countdownID);
     }
   }, TIME_DECR);
+}
+
+chrome.runtime.onInstalled.addListener(function (details) {
+  console.log('previousVersion', details.previousVersion);
 });
 
-// console.log('\'Allo \'Allo! Event Page for Browser Action');
+chrome.tabs.onRemoved.addListener(function (tabID) {
+
+  if (tabID === currentTab.id) {
+
+    clearInterval(countdownID);
+    chrome.browserAction.setBadgeText({ text: '' });
+    currentTab = undefined;
+
+    if (tabRemovedByExtension) {
+      openBookmark();
+      tabRemovedByExtension = false;
+    }
+  }
+});
+
+chrome.runtime.onMessage.addListener(function (request) {
+  /*, sender*/
+
+  bookmarkData = request;
+
+  if ((typeof currentTab === 'undefined' ? 'undefined' : _typeof(currentTab)) === _typeof({})) {
+    tabRemovedByExtension = true;
+    chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
+  } else {
+      openBookmark();
+    }
+});
 //# sourceMappingURL=background.js.map

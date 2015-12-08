@@ -1,3 +1,74 @@
 body {
-  padding: 20px;
+  width: 270px;
+  padding: 30px;
+  font-size: 14px;
+  background: #212229;
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 0;
+  color: #ffd75c;
+}
+
+#mins {
+  
+  width: 50px;
+  margin-top: 1rem;
+  line-height: 2em;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+
+  background: #ffd75c;
+  color: #212229;
+  border: none;
+  border-radius: 50%;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+.spinner {
+  width: 30px;
+  background: none;
+  outline: none;
+  border: none;
+  color: #4c4c52;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.spinner:hover {
+  color: white;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0;
+}
+
+label {
+  display: block;
+  line-height: 1.2rem;
+  letter-spacing: 0.4px;
+}
+
+#mins-text {
+  /*color: #ffd75c;*/
+  line-height: 1.5rem;
+}
+
+#get-bookmarks {
+  width: 50%;
+  font-size: 1rem;
+  line-height: 2rem;
+  margin-top: 1rem;
+  background: #ffd75c;
+  color: #212229;
+  border: 0;
 }

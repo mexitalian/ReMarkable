@@ -1,6 +1,7 @@
 'use strict';
 
 var realBookmarks = [];
+var minsInput = document.getElementById('mins');
 
 function filterBookmarks(bookmarks) {
 
@@ -34,22 +35,27 @@ function minsToMillis(mins) {
   return mins * 60 * 1000;
 }
 
-// function justOne(bookmarks) {
-//   while ( true ) {
+function sanitizeInput() {
+  // if the input has no value we will default it to minimum value
+  if (isNaN(parseInt(minsInput.value))) {
+    minsInput.value = minsInput.min;
+  }
+}
 
-//     bookmarks.forEach(function(bookmark) {
-//       if (bookmark.url) {
-//         console.log(bookmark);
-//         break;
-//       }
-//     });
-//   }
-// };
-
-document.getElementById('get-bookmarks').addEventListener('click', function () {
+function spinUp() {
+  if (+minsInput.value < +minsInput.max) {
+    minsInput.value++;
+  }
+}
+function spinDown() {
+  if (+minsInput.value > +minsInput.min) {
+    minsInput.value--;
+  }
+}
+function onGetBookmark() {
   // chrome.bookmarks.getTree(getRandomMark);
   var mark = getRandomMark();
-  var mins = Math.round(document.getElementById('mins').value);
+  var mins = Math.round(minsInput.value);
 
   console.log(mark.url);
 
@@ -57,7 +63,16 @@ document.getElementById('get-bookmarks').addEventListener('click', function () {
     redirect: mark.url,
     millis: minsToMillis(mins)
   });
-});
+}
+
+/*
+    Event Bindings
+    --------------
+*/
+document.getElementById('mins').addEventListener('blur', sanitizeInput);
+document.getElementById('plus').addEventListener('click', spinUp);
+document.getElementById('minus').addEventListener('click', spinDown);
+document.getElementById('get-bookmarks').addEventListener('click', onGetBookmark);
 
 chrome.bookmarks.getTree(filterBookmarks);
 //# sourceMappingURL=popup.js.map
