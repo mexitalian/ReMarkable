@@ -61,12 +61,22 @@ function onGetBookmark() {
 
   console.log(mark.url);
 
+  localStorage.timePeriod = minsInput.value;
+
   chrome.runtime.sendMessage({
     redirect: mark.url,
     millis: minsToMillis(mins)
   });
 }
 
+
+/*
+    UI State
+    --------
+*/
+if (localStorage.timePeriod) {
+  document.getElementById('mins').value = localStorage.timePeriod;
+}
 
 /*
     Event Bindings
