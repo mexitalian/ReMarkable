@@ -1,37 +1,6 @@
 'use strict';
 
-let realBookmarks = [];
 let minsInput = document.getElementById('mins');
-
-function filterBookmarks(bookmarks) {
-
-    bookmarks.forEach(bookmark => {
-      
-      if (bookmark.url) {
-        realBookmarks.push(bookmark);
-        // console.log('bookmark: ' + bookmark.title + ' ~  ' + bookmark.url);
-      }
-
-      if (bookmark.children) {
-        filterBookmarks(bookmark.children);
-      }
-
-    });
-}
-
-function getRandomMark() {
-  let randomIndex = Math.floor( Math.random() * realBookmarks.length );
-
-    while (true) {
-      console.log(randomIndex);
-      if (realBookmarks[randomIndex].url) {
-        return realBookmarks[randomIndex];
-      }
-      else {
-        randomIndex = Math.floor( Math.random() * realBookmarks.length );
-      }
-    }
-}
 
 function minsToMillis(mins) {
   return mins * 60 * 1000;
@@ -54,29 +23,26 @@ function spinDown() {
     minsInput.value--;
   }
 }
+
 function onGetBookmark() {
-  // chrome.bookmarks.getTree(getRandomMark);
-  let mark = getRandomMark();
+  
   let mins = Math.round( minsInput.value );
-
-  console.log(mark.url);
-
-  localStorage.timePeriod = minsInput.value;
+  chrome.extension.getBackgroundPage().mins = minsInput.value;
 
   chrome.runtime.sendMessage({
-    redirect: mark.url,
-    millis: minsToMillis(mins)
+    action: 'open',
+    millis: minsToMillis(mins),
+    mins: mins
   });
 }
+
 
 
 /*
     UI State
     --------
 */
-if (localStorage.timePeriod) {
-  document.getElementById('mins').value = localStorage.timePeriod;
-}
+minsInput.value = chrome.extension.getBackgroundPage().mins || minsInput.value;
 
 /*
     Event Bindings
@@ -88,5 +54,7 @@ document.getElementById('minus').addEventListener('click', spinDown);
 document.getElementById('get-bookmarks').addEventListener('click', onGetBookmark);
 
 
-chrome.bookmarks.getTree(filterBookmarks);
+chrome.runtime.sendMessage({ action: 'loadBookmarks' }); // need a better place for this, it is running everytime
+
+// chrome.runtime.openOptionsPage(function callback)
 

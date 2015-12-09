@@ -18,8 +18,11 @@ var COLORS = {
 
 var currentTab = undefined;
 var countdownID = undefined;
-var bookmarkData = undefined;
 var tabRemovedByExtension = undefined;
+
+var bookmarks = [];
+var folders = [];
+var millis = undefined;
 
 function msToTime(ms) {
   // to seconds
@@ -31,9 +34,41 @@ function msToTime(ms) {
   return mins + ':' + remainingSecs;
 }
 
+function filterBookmarks(nodeTree) {
+
+  nodeTree.forEach(function (bookmark) {
+
+    if (bookmark.url) {
+      bookmarks.push(bookmark);
+      console.log(bookmark);
+    } else {
+      folders.push(bookmark);
+    }
+
+    if (bookmark.children) {
+      filterBookmarks(bookmark.children);
+    }
+  });
+}
+
+function getRandomMark() {
+
+  var randomIndex = Math.floor(Math.random() * bookmarks.length);
+
+  //I don't think we need a while here
+  while (true) {
+    console.log(randomIndex);
+    if (bookmarks[randomIndex].url) {
+      return bookmarks[randomIndex];
+    } else {
+      randomIndex = Math.floor(Math.random() * bookmarks.length);
+    }
+  }
+}
+
 function openBookmark() {
 
-  var timePeriod = bookmarkData.millis;
+  var timePeriod = millis;
   var initialColor = timePeriod > AMBER_PERIOD ? 'GREEN' : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
 
   chrome.browserAction.setBadgeBackgroundColor({ color: COLORS[initialColor] });
@@ -49,7 +84,7 @@ function openBookmark() {
     }, timePeriod - RED_PERIOD);
   }
 
-  chrome.tabs.create({ url: bookmarkData.redirect }, function (tab) {
+  chrome.tabs.create({ url: getRandomMark().url }, function (tab) {
     console.log(tab);
     currentTab = tab;
   });
@@ -86,16 +121,30 @@ chrome.tabs.onRemoved.addListener(function (tabID) {
   }
 });
 
+// chrome.runtime.onStartup.addListener(function() {
+
+// });
+
 chrome.runtime.onMessage.addListener(function (request) {
   /*, sender*/
 
-  bookmarkData = request;
+  switch (request.action) {
 
-  if ((typeof currentTab === 'undefined' ? 'undefined' : _typeof(currentTab)) === _typeof({})) {
-    tabRemovedByExtension = true;
-    chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
-  } else {
-      openBookmark();
-    }
+    case 'open':
+
+      millis = request.millis;
+
+      if ((typeof currentTab === 'undefined' ? 'undefined' : _typeof(currentTab)) === _typeof({})) {
+        tabRemovedByExtension = true;
+        chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
+      } else {
+          openBookmark();
+        }
+      break;
+
+    case 'loadBookmarks':
+      chrome.bookmarks.getTree(filterBookmarks);
+      break;
+  }
 });
 //# sourceMappingURL=background.js.map
