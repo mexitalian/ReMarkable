@@ -15,10 +15,11 @@ const COLORS = {
 let currentTab;
 let countdownID;
 let tabRemovedByExtension;
+let millis;
 
 let bookmarks = [];
 let folders   = [];
-let millis;
+let folderIDs = [];
 
 
 function msToTime(ms) {
@@ -31,40 +32,99 @@ function msToTime(ms) {
   return mins + ':' + remainingSecs;
 }
 
-function filterBookmarks(nodeTree) {
+/*
+    Bookmark sorting
+*/
 
-    nodeTree.forEach(bookmark => {
-      
-      if (bookmark.url)
-      {
-        bookmarks.push(bookmark);
-        console.log(bookmark);
-      }
-      else 
-      {
-        folders.push(bookmark);
-      }
+// function 
+/*
+function getFolders(nodeTree) {
 
-      if (bookmark.children) {
-        filterBookmarks(bookmark.children);
-      }
+  nodeTree.forEach(bookmark => {
 
-    });
+    if (!bookmark.url) {
+      folders.push(bookmark);
+    }
+
+    if (bookmark.children) {
+      getFolders(bookmark);
+    }
+  });
+}
+*/
+function getBookmarks(nodeTree) {
+
+  nodeTree.forEach(bookmark => {
+
+    if (bookmark.url) {
+      bookmarks.push(bookmark);
+    }
+
+    if (bookmark.children) {
+      getBookmarks(bookmark.children);
+    }
+
+  });
+}
+
+function getBookmarksAndFolders(nodeTree) {
+
+  nodeTree.forEach(bookmark => {
+
+    // use Array.prototype.filter() ?
+    if (bookmark.url) {
+      bookmarks.push(bookmark);
+    }
+    else {
+      folders.push(bookmark);
+    }
+
+    if (bookmark.children) {
+      getBookmarksAndFolders(bookmark.children);
+    }
+
+  });
+
+  // folders.shift(); // need to get rid of root folder
+}
+
+
+function getBookmarksByFolderID(id) {
+
+  chrome.bookmarks.getChildren(id, getBookmarks);
 
 }
 
-function getRandomMark() {
+function refreshBookmarks() {
 
-  let randomIndex = Math.floor( Math.random() * bookmarks.length );
+  bookmarks = []; // reset the list
+
+  if ( folderIDs.length === 0 ) {
+    getBookmarks();
+  }
+  else {
+    folderIDs.forEach( id => {
+      getBookmarksByFolderID(id);
+    });
+  }
+}
+
+// function orderFolders() {
+  
+// }
+
+function getRandomBookmark() {
+
+  let random = Math.floor( Math.random() * bookmarks.length );
 
   //I don't think we need a while here
     while (true) {
-      console.log(randomIndex);
-      if (bookmarks[randomIndex].url) {
-        return bookmarks[randomIndex];
+      console.log(random);
+      if (bookmarks[random].url) {
+        return bookmarks[random];
       }
       else {
-        randomIndex = Math.floor( Math.random() * bookmarks.length );
+        random = Math.floor( Math.random() * bookmarks.length );
       }
     }
 }
@@ -88,7 +148,7 @@ function openBookmark() {
     }, timePeriod - RED_PERIOD);
   }
 
-  chrome.tabs.create({ url: getRandomMark().url }, tab => {
+  chrome.tabs.create({ url: getRandomBookmark().url }, tab => {
     console.log(tab);
     currentTab = tab;
   });
@@ -111,7 +171,9 @@ function openBookmark() {
 
 
 chrome.runtime.onInstalled.addListener(details => {
+
   console.log('previousVersion', details.previousVersion);
+  chrome.bookmarks.getTree(getBookmarksAndFolders);
 });
 
 chrome.tabs.onRemoved.addListener(tabID => {
@@ -129,11 +191,14 @@ chrome.tabs.onRemoved.addListener(tabID => {
   }
 });
 
-// chrome.runtime.onStartup.addListener(function() {
-  
-// });
+chrome.runtime.onStartup.addListener(function() { // I cannot see when this event is fired
+  console.log('runtime.onStartup');
+});
 
 chrome.runtime.onMessage.addListener(request => { /*, sender*/
+
+  // clean up this switch
+  // move the blocks into their own functions outside
 
   switch (request.action) {
 
@@ -152,8 +217,28 @@ chrome.runtime.onMessage.addListener(request => { /*, sender*/
       }
       break;
 
+
     case 'loadBookmarks':
-      chrome.bookmarks.getTree(filterBookmarks);
+      chrome.bookmarks.getTree(getBookmarksAndFolders);
+      break;
+
+
+    case 'toggleFolder':
+
+      let {id, isSelected} = request;
+
+      if ( isSelected )
+      {
+        folderIDs.push(id);
+      }
+      else
+      {
+        let idIndex = folderIDs.findIndex( val => val===id );
+        folderIDs.splice(idIndex, 1);
+      }
+
+      refreshBookmarks();
+
       break;
   }
 

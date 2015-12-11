@@ -50,8 +50,9 @@ document.getElementById('mins').addEventListener('blur', sanitizeInput);
 document.getElementById('plus').addEventListener('click', spinUp);
 document.getElementById('minus').addEventListener('click', spinDown);
 document.getElementById('get-bookmarks').addEventListener('click', onGetBookmark);
-
-chrome.runtime.sendMessage({ action: 'loadBookmarks' }); // need a better place for this, it is running everytime
+document.getElementById('options').addEventListener('click', function () {
+  chrome.runtime.openOptionsPage();
+});
 
 // chrome.runtime.openOptionsPage(function callback)
 //# sourceMappingURL=popup.js.map

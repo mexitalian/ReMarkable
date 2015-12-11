@@ -58,6 +58,8 @@ label {
   letter-spacing: 0.4px;
 }
 
+
+
 #mins-text {
   /*color: #ffd75c;*/
   line-height: 1.5rem;
@@ -71,4 +73,31 @@ label {
   background: #ffd75c;
   color: #212229;
   border: 0;
+}
+
+
+/*
+    Options
+    =======
+*/
+
+#folder-list {
+  
+}
+
+#folder-list label {
+  width: 75%;
+  line-height: 2em;
+  text-align: left;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+#folder-list label:hover {
+  background: white;
+  color: black;
+}
+
+#folder-list input {
+  margin: 0 12px;
 }
