@@ -12,16 +12,20 @@
   </head>
   <body>
     <h1>Bookmark Roulette</h1>
-    <label for="mins">Choose the amount of time to stake on hiting the bookmark jackpot, then take a spin down memory lane.</label>
+    <p>Choose the amount of time to stake on hiting the bookmark jackpot, then take a spin down memory lane.</p>
 
     <button id="minus" class="spinner">-</button>
     <input type="number" value="5" min="1" max="60" step="1" name="mins" id="mins"/>
     <button id="plus" class="spinner">+</button>
 
-    <label for="mins" id="mins-text">mins</label>
-    <button id="get-bookmarks">Spin!</button>
-
-    <a id="options" href="#">Options</a>
+    <p id="mins-text">mins</p>
+    <button id="get-bookmarks">
+        <div>&larr; spin &rarr;</div>
+    </button>
+    
+    <div id="options-container">
+        <span id="options">settings</span>
+    </div>
 
     <!-- build:js scripts/popup-vendor.js -->
     <!-- bower:js -->

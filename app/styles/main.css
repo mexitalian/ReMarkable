@@ -26,6 +26,13 @@ h1 {
   border: none;
   border-radius: 50%;
   outline: none;
+
+  transition: 0.5s;
+}
+
+#mins:focus {
+  transform: scaleX(1.5) scaleY(1.5);
+  box-shadow: 0 0 0 10px #212229;
 }
 
 button {
@@ -40,6 +47,7 @@ button {
   color: #4c4c52;
   font-size: 1.5rem;
   font-weight: bold;
+  transition: 0.3s;
 }
 
 .spinner:hover {
@@ -52,6 +60,7 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+p,
 label {
   display: block;
   line-height: 1.2rem;
@@ -62,6 +71,7 @@ label {
 
 #mins-text {
   /*color: #ffd75c;*/
+  margin-top: 0;
   line-height: 1.5rem;
 }
 
@@ -70,9 +80,46 @@ label {
   font-size: 1rem;
   line-height: 2rem;
   margin-top: 1rem;
-  background: #ffd75c;
+  background: transparent;
   color: #212229;
   border: 0;
+  outline: none;
+}
+
+#get-bookmarks div {
+  background: #ffd75c;
+  transition: 0.2s;
+}
+
+#get-bookmarks:hover div {
+  /*letter-spacing: 1px;*/
+  transform: scaleX(1.1) scaleY(1.1);
+}
+
+#get-bookmarks:focus div {
+  transform: scaleX(1) scaleY(1);
+}
+
+#options-container {
+  position: absolute;
+  bottom:0;
+  right:0;
+  margin-top: 1rem;
+}
+
+#options {
+  cursor: pointer;
+  color: gray;
+  line-height: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  float: right;
+  /*text-align: center;*/
+}
+
+#options:hover {
+  color: black;
+  background: white;
 }
 
 
