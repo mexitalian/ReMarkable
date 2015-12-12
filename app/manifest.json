@@ -16,9 +16,7 @@
   },
   "permissions": [
     "bookmarks",
-    "history",
-    "webRequest",
-    "*://*.google.com"
+    "history"
   ],
   "options_ui": {
     "page": "options.html",
@@ -29,7 +27,7 @@
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
     },
-    "default_title": "Bookmark Roulette",
+    "default_title": "The Bookmarked",
     "default_popup": "popup.html"
   }
 }
