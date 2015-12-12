@@ -128,12 +128,16 @@ label {
     =======
 */
 
+
+ul {
+  list-style: none;
+}
+
 #folder-list {
-  
+  padding: 0;
 }
 
 #folder-list label {
-  width: 75%;
   line-height: 2em;
   text-align: left;
   margin: 0 auto;

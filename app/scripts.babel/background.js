@@ -17,6 +17,7 @@ let countdownID;
 let tabRemovedByExtension;
 let millis;
 
+let originalNodeTree;
 let bookmarks = [];
 let folders   = [];
 let folderIDs = [];
@@ -37,21 +38,21 @@ function msToTime(ms) {
 */
 
 // function 
-/*
-function getFolders(nodeTree) {
 
-  nodeTree.forEach(bookmark => {
+function getFolders(nodes, folderArr = folders) {
 
-    if (!bookmark.url) {
-      folders.push(bookmark);
-    }
+  nodes.forEach( (node, index) => {
 
-    if (bookmark.children) {
-      getFolders(bookmark);
+    if (node.children) {
+
+      node.children = node.children.filter( node => node.children );
+
+      folderArr[index] = node;
+      getFolders(node.children, node.children); // ugly, not dry, find a better signature
     }
   });
 }
-*/
+
 function getBookmarks(nodeTree) {
 
   nodeTree.forEach(bookmark => {
@@ -68,31 +69,14 @@ function getBookmarks(nodeTree) {
 }
 
 function getBookmarksAndFolders(nodeTree) {
-
-  nodeTree.forEach(bookmark => {
-
-    // use Array.prototype.filter() ?
-    if (bookmark.url) {
-      bookmarks.push(bookmark);
-    }
-    else {
-      folders.push(bookmark);
-    }
-
-    if (bookmark.children) {
-      getBookmarksAndFolders(bookmark.children);
-    }
-
-  });
-
-  // folders.shift(); // need to get rid of root folder
+  getBookmarks(nodeTree);
+  getFolders(nodeTree);
 }
 
 
 function getBookmarksByFolderID(id) {
 
   chrome.bookmarks.getChildren(id, getBookmarks);
-
 }
 
 function refreshBookmarks() {
@@ -100,7 +84,7 @@ function refreshBookmarks() {
   bookmarks = []; // reset the list
 
   if ( folderIDs.length === 0 ) {
-    getBookmarks();
+    getBookmarks(originalNodeTree);
   }
   else {
     folderIDs.forEach( id => {
@@ -173,7 +157,11 @@ function openBookmark() {
 chrome.runtime.onInstalled.addListener(details => {
 
   console.log('previousVersion', details.previousVersion);
-  chrome.bookmarks.getTree(getBookmarksAndFolders);
+
+  chrome.bookmarks.getTree( nodeTree => {
+    originalNodeTree = nodeTree[0].children;
+    getBookmarksAndFolders(originalNodeTree);
+  });
 });
 
 chrome.tabs.onRemoved.addListener(tabID => {
@@ -219,7 +207,10 @@ chrome.runtime.onMessage.addListener(request => { /*, sender*/
 
 
     case 'loadBookmarks':
-      chrome.bookmarks.getTree(getBookmarksAndFolders);
+      chrome.bookmarks.getTree( nodeTree => {
+        originalNodeTree = nodeTree[0].children.children;
+        getBookmarksAndFolders(originalNodeTree);
+      });
       break;
 
 

@@ -5,6 +5,62 @@ let $ = function(q) {
   return result.length === 1 ? result[0] : result;
 };
 let $new = tag => document.createElement(tag);
+let bgJS = chrome.extension.getBackgroundPage();
+let listEl = $('#folder-list');
+let frag = document.createDocumentFragment();
+
+
+// Dom Generation
+
+function genFolderList( list = bgJS.folders, containerEl = frag ) {
+
+  list.forEach( folder => {
+
+    let li    = $new('li');
+    let label = $new('label');
+    let check = $new('input');
+    let span  = $new('span');
+
+    check.id = `folder-${folder.id}`;
+    check.value = folder.id;
+    check.setAttribute('type','checkbox');
+    check.checked = Boolean( list.find( id => id===folder.id ) );
+
+    span.textContent = folder.title;
+    label.appendChild(check);
+    label.appendChild(span);
+    li.appendChild(label);
+
+
+    if (folder.children) {
+
+      let ul = $new('ul');
+
+      genFolderList( folder.children, ul );
+      li.appendChild(ul);
+    }
+
+    containerEl.appendChild(li);
+  });
+}
+
+function toggleCheckboxUI( parentEl ) {
+
+  let descendants = [];
+  let parentLI = parentEl.parentNode.parentNode;
+  let arrayUL = [...parentLI.querySelectorAll('ul')];
+
+  arrayUL.forEach( ul => {
+    descendants.push( ... ul.querySelectorAll('input') );
+  });
+
+  for ( let i in descendants ) {
+    descendants[i].checked = parentEl.checked;
+  }
+}
+
+
+// Events
 
 function toggleFolder(input) {
 
@@ -15,29 +71,6 @@ function toggleFolder(input) {
   });
 }
 
-
-let bgJS = chrome.extension.getBackgroundPage();
-let listEl = $('#folder-list');
-let frag = document.createDocumentFragment();
-
-// create the checklist
-bgJS.folders.forEach(folder => {
-
-  let check = $new('input');
-  let span  = $new('span');
-  let label = $new('label');
-
-  check.setAttribute('type','checkbox');
-  check.value = folder.id;
-  check.checked = Boolean( bgJS.folderIDs.find( id => id===folder.id ) );
-
-  span.textContent = folder.title;
-  label.appendChild(check);
-  label.appendChild(span);
-
-  frag.appendChild(label);
-
-});
 
 listEl.addEventListener('click', event => {
 
@@ -52,7 +85,7 @@ listEl.addEventListener('click', event => {
     {
       if (el === possibleTarget)
       {
-        console.log(el);
+        toggleCheckboxUI(el);
         toggleFolder(el);
       }
       el = el.parentNode;
@@ -61,4 +94,12 @@ listEl.addEventListener('click', event => {
   
 });
 
+
+
+/*
+    Initialise
+    ==========
+*/
+
+genFolderList();
 listEl.appendChild(frag);
