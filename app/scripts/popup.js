@@ -25,7 +25,6 @@ function spinDown() {
 }
 
 function onGetBookmark() {
-
   var mins = Math.round(minsInput.value);
   chrome.extension.getBackgroundPage().mins = minsInput.value;
 
@@ -55,4 +54,3 @@ document.getElementById('options').addEventListener('click', function () {
 });
 
 // chrome.runtime.openOptionsPage(function callback)
-//# sourceMappingURL=popup.js.map

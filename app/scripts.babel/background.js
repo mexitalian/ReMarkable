@@ -19,7 +19,7 @@ let millis;
 
 let originalNodeTree;
 let bookmarks = [];
-let folders   = [];
+let folders = [];
 let folderIDs = [];
 
 
@@ -37,7 +37,7 @@ function msToTime(ms) {
     Bookmark sorting
 */
 
-// function 
+// function
 
 function getFolders(nodes, folderArr = folders) {
 
@@ -45,7 +45,7 @@ function getFolders(nodes, folderArr = folders) {
 
     if (node.children) {
 
-      node.children = node.children.filter( node => node.children );
+      node.children = node.children.filter( childNode => childNode.children );
 
       folderArr[index] = node;
       getFolders(node.children, node.children); // ugly, not dry, find a better signature
@@ -94,29 +94,19 @@ function refreshBookmarks() {
 }
 
 // function orderFolders() {
-  
 // }
 
 function getRandomBookmark() {
 
   let random = Math.floor( Math.random() * bookmarks.length );
 
-  //I don't think we need a while here
-    while (true) {
-      console.log(random);
-      if (bookmarks[random].url) {
-        return bookmarks[random];
-      }
-      else {
-        random = Math.floor( Math.random() * bookmarks.length );
-      }
-    }
+  return bookmarks[random];
 }
 
 function openBookmark() {
 
   let timePeriod = millis;
-  let initialColor = timePeriod > AMBER_PERIOD ? 'GREEN' 
+  let initialColor = timePeriod > AMBER_PERIOD ? 'GREEN'
     : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
 
   chrome.browserAction.setBadgeBackgroundColor({color: COLORS[initialColor] });
@@ -224,7 +214,7 @@ chrome.runtime.onMessage.addListener(request => { /*, sender*/
       }
       else
       {
-        let idIndex = folderIDs.findIndex( val => val===id );
+        let idIndex = folderIDs.findIndex( val => val === id );
         folderIDs.splice(idIndex, 1);
       }
 

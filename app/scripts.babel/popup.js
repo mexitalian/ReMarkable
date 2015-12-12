@@ -25,7 +25,6 @@ function spinDown() {
 }
 
 function onGetBookmark() {
-  
   let mins = Math.round( minsInput.value );
   chrome.extension.getBackgroundPage().mins = minsInput.value;
 

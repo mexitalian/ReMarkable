@@ -49,8 +49,8 @@ function getFolders(nodes) {
 
     if (node.children) {
 
-      node.children = node.children.filter(function (node) {
-        return node.children;
+      node.children = node.children.filter(function (childNode) {
+        return childNode.children;
       });
 
       folderArr[index] = node;
@@ -97,22 +97,13 @@ function refreshBookmarks() {
 }
 
 // function orderFolders() {
-
 // }
 
 function getRandomBookmark() {
 
   var random = Math.floor(Math.random() * bookmarks.length);
 
-  //I don't think we need a while here
-  while (true) {
-    console.log(random);
-    if (bookmarks[random].url) {
-      return bookmarks[random];
-    } else {
-      random = Math.floor(Math.random() * bookmarks.length);
-    }
-  }
+  return bookmarks[random];
 }
 
 function openBookmark() {
@@ -226,4 +217,3 @@ chrome.runtime.onMessage.addListener(function (request) {
       break;
   }
 });
-//# sourceMappingURL=background.js.map

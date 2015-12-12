@@ -16,15 +16,15 @@ function genFolderList( list = bgJS.folders, containerEl = frag ) {
 
   list.forEach( folder => {
 
-    let li    = $new('li');
+    let li = $new('li');
     let label = $new('label');
     let check = $new('input');
-    let span  = $new('span');
+    let span = $new('span');
 
     check.id = `folder-${folder.id}`;
     check.value = folder.id;
-    check.setAttribute('type','checkbox');
-    check.checked = Boolean( list.find( id => id===folder.id ) );
+    check.setAttribute('type', 'checkbox');
+    check.checked = Boolean( list.find( id => id === folder.id ) );
 
     span.textContent = folder.title;
     label.appendChild(check);
@@ -91,7 +91,6 @@ listEl.addEventListener('click', event => {
       el = el.parentNode;
     }
   }
-  
 });
 
 

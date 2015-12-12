@@ -1,4 +1,152 @@
-$padding: 20px;
+$navy: #212229;
+$orange: #ffd75c;
+
 body {
-  padding: $padding;
+  width: 270px;
+  padding: 30px;
+  font-size: 14px;
+  background: $navy;
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 0;
+  color: $orange;
+}
+
+#mins {
+  width: 50px;
+  margin-top: 1rem;
+  line-height: 2em;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+
+  background: $orange;
+  color: $navy;
+  border: none;
+  border-radius: 50%;
+  outline: none;
+
+  transition: 0.5s;
+
+  &:focus {
+    transform: scaleX(1.5) scaleY(1.5);
+    box-shadow: 0 0 0 10px $navy;
+  }
+}
+
+button {
+  cursor: pointer;
+}
+
+.spinner {
+  width: 30px;
+  background: none;
+  outline: none;
+  border: none;
+  color: #4c4c52;
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: 0.3s;
+  &:hover {
+    color: white;
+  }
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0;
+}
+
+p,
+label {
+  display: block;
+  line-height: 1.2rem;
+  letter-spacing: 0.4px;
+}
+
+
+
+#mins-text {
+  /*color: $orange;*/
+  margin-top: 0;
+  line-height: 1.5rem;
+}
+
+#get-bookmarks {
+  width: 50%;
+  font-size: 1rem;
+  line-height: 2rem;
+  margin-top: 1rem;
+  background: transparent;
+  color: $navy;
+  border: 0;
+  outline: none;
+
+  div {
+    background: $orange;
+    transition: 0.2s;
+  }
+// there is a better way to do the below, inlining it in the above div {}
+  &:hover div {
+    /*letter-spacing: 1px;*/
+    transform: scaleX(1.1) scaleY(1.1);
+  }
+  &:focus div {
+    transform: scaleX(1) scaleY(1);
+  }
+}
+
+
+#options-container {
+  position: absolute;
+  bottom:0;
+  right:0;
+  margin-top: 1rem;
+}
+
+#options {
+  cursor: pointer;
+  color: gray;
+  line-height: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  float: right;
+  /*text-align: center;*/
+  &:hover {
+    color: black;
+    background: white;
+  }
+}
+
+
+
+/*
+    Options
+    =======
+*/
+
+
+ul {
+  list-style: none;
+}
+
+#folder-list {
+  padding: 0;
+  label {
+    line-height: 2em;
+    text-align: left;
+    margin: 0 auto;
+    cursor: pointer;
+    &:hover {
+      background: white;
+      color: black;
+    }
+  }
+  input {
+    margin: 0 12px;
+  }
 }

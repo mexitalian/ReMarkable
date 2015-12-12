@@ -101,4 +101,3 @@ listEl.addEventListener('click', function (event) {
 
 genFolderList();
 listEl.appendChild(frag);
-//# sourceMappingURL=options.js.map
