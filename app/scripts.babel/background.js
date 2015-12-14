@@ -20,7 +20,7 @@ let millis;
 let originalNodeTree;
 let bookmarks = [];
 let folders = [];
-let folderIDs = [];
+let folderIDs = new Set();
 
 
 function msToTime(ms) {
@@ -45,10 +45,11 @@ function getFolders(nodes, folderArr = folders) {
 
     if (node.children) {
 
-      node.children = node.children.filter( childNode => childNode.children );
+      let clone = Object.assign( {}, node );
+      clone.children = node.children.filter( child => child.children );
 
-      folderArr[index] = node;
-      getFolders(node.children, node.children); // ugly, not dry, find a better signature
+      folderArr[index] = clone;
+      getFolders(clone.children, clone.children); // ugly, not dry, find a better signature
     }
   });
 }
@@ -64,7 +65,6 @@ function getBookmarks(nodeTree) {
     if (bookmark.children) {
       getBookmarks(bookmark.children);
     }
-
   });
 }
 
@@ -76,14 +76,19 @@ function getBookmarksAndFolders(nodeTree) {
 
 function getBookmarksByFolderID(id) {
 
-  chrome.bookmarks.getChildren(id, getBookmarks);
+  // Only get shallow results
+  // All selected folders (including children) have a separate id entry
+
+  chrome.bookmarks.getChildren(id, children => {
+    bookmarks.push( ...children.filter(child => child.url) );
+  });
 }
 
 function refreshBookmarks() {
 
   bookmarks = []; // reset the list
 
-  if ( folderIDs.length === 0 ) {
+  if ( !folderIDs.size ) {
     getBookmarks(originalNodeTree);
   }
   else {
@@ -206,16 +211,18 @@ chrome.runtime.onMessage.addListener(request => { /*, sender*/
 
     case 'toggleFolder':
 
-      let {id, isSelected} = request;
+      let {folders} = request;
 
-      if ( isSelected )
-      {
-        folderIDs.push(id);
-      }
-      else
-      {
-        let idIndex = folderIDs.findIndex( val => val === id );
-        folderIDs.splice(idIndex, 1);
+      for (let id in folders) {
+
+        let isSelected = folders[id];
+
+        if ( isSelected ) {
+          folderIDs.add(id);
+        }
+        else {
+          folderIDs.delete(id);
+        }
       }
 
       refreshBookmarks();

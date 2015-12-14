@@ -123,6 +123,7 @@ label {
 */
 ul {
   list-style: none;
+  padding-left: 30px;
 }
 
 #folder-list {

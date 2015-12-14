@@ -9,6 +9,8 @@ let currentMillis = today.getMilliseconds()
 
 function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var TIME_DECR = 1000;
 var AMBER_PERIOD = 120000; // 2 min
 var RED_PERIOD = 60000; // 1 min
@@ -24,7 +26,7 @@ var millis = undefined;
 var originalNodeTree = undefined;
 var bookmarks = [];
 var folders = [];
-var folderIDs = [];
+var folderIDs = new Set();
 
 function msToTime(ms) {
   // to seconds
@@ -49,12 +51,13 @@ function getFolders(nodes) {
 
     if (node.children) {
 
-      node.children = node.children.filter(function (childNode) {
-        return childNode.children;
+      var clone = Object.assign({}, node);
+      clone.children = node.children.filter(function (child) {
+        return child.children;
       });
 
-      folderArr[index] = node;
-      getFolders(node.children, node.children); // ugly, not dry, find a better signature
+      folderArr[index] = clone;
+      getFolders(clone.children, clone.children); // ugly, not dry, find a better signature
     }
   });
 }
@@ -80,14 +83,23 @@ function getBookmarksAndFolders(nodeTree) {
 
 function getBookmarksByFolderID(id) {
 
-  chrome.bookmarks.getChildren(id, getBookmarks);
+  // Only get shallow results
+  // All selected folders (including children) have a separate id entry
+
+  chrome.bookmarks.getChildren(id, function (children) {
+    var _bookmarks;
+
+    (_bookmarks = bookmarks).push.apply(_bookmarks, _toConsumableArray(children.filter(function (child) {
+      return child.url;
+    })));
+  });
 }
 
 function refreshBookmarks() {
 
   bookmarks = []; // reset the list
 
-  if (folderIDs.length === 0) {
+  if (!folderIDs.size) {
     getBookmarks(originalNodeTree);
   } else {
     folderIDs.forEach(function (id) {
@@ -200,16 +212,17 @@ chrome.runtime.onMessage.addListener(function (request) {
       break;
 
     case 'toggleFolder':
-      var id = request.id;
-      var isSelected = request.isSelected;
+      var folders = request.folders;
 
-      if (isSelected) {
-        folderIDs.push(id);
-      } else {
-        var idIndex = folderIDs.findIndex(function (val) {
-          return val === id;
-        });
-        folderIDs.splice(idIndex, 1);
+      for (var id in folders) {
+
+        var isSelected = folders[id];
+
+        if (isSelected) {
+          folderIDs.add(id);
+        } else {
+          folderIDs.delete(id);
+        }
       }
 
       refreshBookmarks();

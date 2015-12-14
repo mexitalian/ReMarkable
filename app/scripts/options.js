@@ -38,6 +38,7 @@ function genFolderList() {
     label.appendChild(span);
     li.appendChild(label);
 
+    //  recurse and create sub folders
     if (folder.children) {
 
       var ul = $new('ul');
@@ -50,29 +51,33 @@ function genFolderList() {
   });
 }
 
-function toggleCheckboxUI(parentEl) {
+function getDescendantInputs(parentEl) {
 
-  var descendants = [];
-  var parentLI = parentEl.parentNode.parentNode;
-  var arrayUL = [].concat(_toConsumableArray(parentLI.querySelectorAll('ul')));
+  var li = parentEl.parentNode.parentNode;
+  var inputs = [].concat(_toConsumableArray(li.querySelectorAll('input')));
 
-  arrayUL.forEach(function (ul) {
-    descendants.push.apply(descendants, _toConsumableArray(ul.querySelectorAll('input')));
-  });
+  return inputs;
+}
 
-  for (var i in descendants) {
-    descendants[i].checked = parentEl.checked;
+function toggleCheckboxUI(inputs, isChecked) {
+  for (var i in inputs) {
+    inputs[i].checked = isChecked;
   }
 }
 
 // Events
 
-function toggleFolder(input) {
+function toggleFolder(inputs) {
+
+  var folderIDList = {};
+
+  inputs.forEach(function (input) {
+    folderIDList[input.value] = input.checked;
+  });
 
   chrome.runtime.sendMessage({
     action: 'toggleFolder',
-    id: input.value,
-    isSelected: input.checked
+    folders: folderIDList
   });
 }
 
@@ -86,9 +91,13 @@ listEl.addEventListener('click', function (event) {
 
     while (el && el !== listEl) {
       if (el === possibleTarget) {
-        toggleCheckboxUI(el);
-        toggleFolder(el);
+        var isParentChecked = el.checked;
+        var inputs = getDescendantInputs(el);
+
+        toggleCheckboxUI(inputs, isParentChecked);
+        toggleFolder(inputs);
       }
+
       el = el.parentNode;
     }
   }

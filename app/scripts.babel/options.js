@@ -31,7 +31,7 @@ function genFolderList( list = bgJS.folders, containerEl = frag ) {
     label.appendChild(span);
     li.appendChild(label);
 
-
+//  recurse and create sub folders
     if (folder.children) {
 
       let ul = $new('ul');
@@ -44,30 +44,34 @@ function genFolderList( list = bgJS.folders, containerEl = frag ) {
   });
 }
 
-function toggleCheckboxUI( parentEl ) {
+function getDescendantInputs(parentEl) {
 
-  let descendants = [];
-  let parentLI = parentEl.parentNode.parentNode;
-  let arrayUL = [...parentLI.querySelectorAll('ul')];
+  let li = parentEl.parentNode.parentNode;
+  let inputs = [...li.querySelectorAll('input')];
 
-  arrayUL.forEach( ul => {
-    descendants.push( ... ul.querySelectorAll('input') );
-  });
+  return inputs;
+}
 
-  for ( let i in descendants ) {
-    descendants[i].checked = parentEl.checked;
+function toggleCheckboxUI( inputs, isChecked ) {
+  for ( let i in inputs ) {
+    inputs[i].checked = isChecked;
   }
 }
 
 
 // Events
 
-function toggleFolder(input) {
+function toggleFolder(inputs) {
+
+  let folderIDList = {};
+
+  inputs.forEach(input => {
+    folderIDList[input.value] = input.checked;
+  });
 
   chrome.runtime.sendMessage({
     action: 'toggleFolder',
-    id: input.value,
-    isSelected: input.checked
+    folders: folderIDList
   });
 }
 
@@ -85,9 +89,13 @@ listEl.addEventListener('click', event => {
     {
       if (el === possibleTarget)
       {
-        toggleCheckboxUI(el);
-        toggleFolder(el);
+        let isParentChecked = el.checked;
+        let inputs = getDescendantInputs(el);
+
+        toggleCheckboxUI(inputs, isParentChecked);
+        toggleFolder(inputs);
       }
+
       el = el.parentNode;
     }
   }
