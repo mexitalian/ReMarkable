@@ -7,8 +7,6 @@ let currentMillis = today.getMilliseconds()
 
 ;
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var TIME_DECR = 1000;
@@ -18,7 +16,7 @@ var COLORS = {
   GREEN: '#00CC00', AMBER: '#FFC200', RED: '#FF0000'
 };
 
-var currentTab = undefined;
+var currentTab = {};
 var countdownID = undefined;
 var tabRemovedByExtension = undefined;
 var millis = undefined;
@@ -121,14 +119,6 @@ function getBookmarkTreeAndParse() {
 // function orderFolders() {
 // }
 
-function getRandomBookmark() {
-
-  var random = Math.floor(Math.random() * bookmarks.length);
-  currentBookmark = bookmarks[random];
-
-  return currentBookmark;
-}
-
 function setupTimer() {
 
   var timePeriod = millis;
@@ -162,7 +152,9 @@ function setupTimer() {
 
 function openBookmark() {
 
-  chrome.tabs.create({ url: currentBookmark.url }, function (tab) {
+  chrome.tabs.create({
+    url: currentBookmark.url
+  }, function (tab) {
     console.log(tab);
     currentTab = tab;
   });
@@ -184,7 +176,7 @@ chrome.tabs.onRemoved.addListener(function (tabID) {
 
     clearInterval(countdownID);
     chrome.browserAction.setBadgeText({ text: '' });
-    currentTab = undefined;
+    currentTab = {};
 
     if (tabRemovedByExtension) {
       openBookmark();
@@ -209,8 +201,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     case 'open':
 
       millis = request.millis;
+      currentBookmark = request.bookmark;
 
-      if ((typeof currentTab === 'undefined' ? 'undefined' : _typeof(currentTab)) === _typeof({})) {
+      if (currentTab.id) {
         tabRemovedByExtension = true;
         chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
       } else {

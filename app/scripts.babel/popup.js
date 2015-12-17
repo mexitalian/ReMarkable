@@ -3,6 +3,7 @@
 let bgPage = chrome.extension.getBackgroundPage();
 let bookmarkTitleEl = document.getElementById('bookmark-title');
 let minsInput = document.getElementById('mins');
+let bookmark;
 
 function minsToMillis(mins) {
   return mins * 60 * 1000;
@@ -26,8 +27,11 @@ function spinDown() {
   }
 }
 
-function getBookmark() {
-  let bookmark = bgPage.getRandomBookmark();
+function getBookmark() { // at random
+
+  let random = Math.floor( Math.random() * bgPage.bookmarks.length );
+  bookmark = bgPage.bookmarks[random];
+
   bookmarkTitleEl.textContent = bookmark.title;
 }
 
@@ -37,6 +41,7 @@ function openBookmark() {
 
   chrome.runtime.sendMessage({
     action: 'open',
+    bookmark: bookmark,
     millis: minsToMillis(mins),
     mins: mins
   });
@@ -61,7 +66,7 @@ document.getElementById('plus').addEventListener('click', spinUp);
 document.getElementById('minus').addEventListener('click', spinDown);
 document.getElementById('open').addEventListener('click', openBookmark);
 document.getElementById('get-bookmark').addEventListener('click', getBookmark);
-document.getElementById('options').addEventListener('click', event => {
+document.getElementById('options').addEventListener('click', function() {
   chrome.runtime.openOptionsPage();
 });
 

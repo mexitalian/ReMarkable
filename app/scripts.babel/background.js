@@ -12,7 +12,7 @@ const COLORS = {
   GREEN: '#00CC00', AMBER: '#FFC200', RED: '#FF0000'
 };
 
-let currentTab;
+let currentTab = {};
 let countdownID;
 let tabRemovedByExtension;
 let millis;
@@ -110,14 +110,6 @@ function getBookmarkTreeAndParse() {
 // function orderFolders() {
 // }
 
-function getRandomBookmark() {
-
-  let random = Math.floor( Math.random() * bookmarks.length );
-  currentBookmark = bookmarks[random];
-
-  return currentBookmark;
-}
-
 function setupTimer() {
 
   let timePeriod = millis;
@@ -154,7 +146,10 @@ function setupTimer() {
 
 function openBookmark() {
 
-  chrome.tabs.create({ url: currentBookmark.url }, tab => {
+  chrome.tabs.create({
+    url: currentBookmark.url
+  },
+  tab => {
     console.log(tab);
     currentTab = tab;
   });
@@ -177,7 +172,7 @@ chrome.tabs.onRemoved.addListener(tabID => {
 
     clearInterval(countdownID);
     chrome.browserAction.setBadgeText({ text: '' });
-    currentTab = undefined;
+    currentTab = {};
 
     if (tabRemovedByExtension) {
       openBookmark();
@@ -200,8 +195,9 @@ chrome.runtime.onMessage.addListener(( request, sender, sendResponse ) => { /*, 
     case 'open':
 
       millis = request.millis;
+      currentBookmark = request.bookmark;
 
-      if (typeof currentTab === typeof {})
+      if (currentTab.id)
       {
         tabRemovedByExtension = true;
         chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
