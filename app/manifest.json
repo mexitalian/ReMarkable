@@ -1,6 +1,6 @@
 {
   "name": "__MSG_appName__",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "manifest_version": 2,
   "description": "__MSG_appDescription__",
   "icons": {
@@ -16,11 +16,12 @@
   },
   "permissions": [
     "bookmarks",
-    "history"
+    "history",
+    "webRequest"
   ],
   "options_ui": {
     "page": "options.html",
-    "chrome_style": true
+    "chrome_style": false
   },
   "browser_action": {
     "default_icon": {
@@ -29,5 +30,6 @@
     },
     "default_title": "ReMark",
     "default_popup": "popup.html"
-  }
+  },
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }

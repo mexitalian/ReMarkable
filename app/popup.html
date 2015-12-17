@@ -13,22 +13,22 @@
   <body id="page-popup">
 
     <h3 id="bookmark-title" class="margin-bottom-0px"></h3>
-    <p id="get-bookmark" class="action action--secondary margin-top-0px">get another</p>
+    <p id="get-bookmark" class="link link--secondary margin-top-0px action">get another</p>
 
     <div id="timer" class="timer-toggle">
-        <button id="minus" class="spinner">-</button>
+        <button id="minus" class="spinner action">-</button>
         <input type="number" value="5" min="1" max="60" step="1" name="mins" id="mins"/>
-        <button id="plus" class="spinner">+</button>
+        <button id="plus" class="spinner action">+</button>
         <p id="mins-text">mins</p>
     </div>
 
-    <button id="open">
+    <button id="open" class="action">
         <div>Go!</div>
     </button>
 
     <p class="status">
         <span class="timer-toggle">Remove the time limit in </span>
-        <span id="options" class="action action--secondary">extension settings</span>
+        <span id="options" class="link link--secondary action">extension settings</span>
     </p>
 
     <!-- build:js scripts/popup-vendor.js -->

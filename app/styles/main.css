@@ -41,18 +41,18 @@ a:hover {
   margin-top: 0;
 }
 
-.action {
+.link {
   color: #1478A5;
   text-decoration: underline;
   cursor: pointer;
 }
 
-.action--secondary {
+.link--secondary {
   font-size: 0.75em;
   color: gray;
 }
 
-.action--secondary:hover {
+.link--secondary:hover {
   color: black;
   text-decoration: underline;
 }
