@@ -7,10 +7,19 @@ let $ = function(q) {
 let $new = tag => document.createElement(tag);
 let bgJS = chrome.extension.getBackgroundPage();
 let listEl = $('#folder-list');
+let folderCountEl = $('#status-folder-count');
+let bookmarkCountEl = $('#status-bookmark-count');
+let timerRadioElList = [...$('input[name="timer"]')];
 let frag = document.createDocumentFragment();
 
 
-// Dom Generation
+// Dom Generation / Manipulation
+
+function updateFolderCounts(response) {
+  console.log(response);
+  folderCountEl.textContent = bgJS.folderIDs.size || 'all';
+  bookmarkCountEl.textContent = bgJS.bookmarks.length;
+}
 
 function genFolderList( list = bgJS.folders, containerEl = frag ) {
 
@@ -24,7 +33,7 @@ function genFolderList( list = bgJS.folders, containerEl = frag ) {
     check.id = `folder-${folder.id}`;
     check.value = folder.id;
     check.setAttribute('type', 'checkbox');
-    check.checked = Boolean( list.find( id => id === folder.id ) );
+    check.checked = bgJS.folderIDs.has(folder.id);
 
     span.textContent = folder.title;
     label.appendChild(check);
@@ -58,6 +67,18 @@ function toggleCheckboxUI( inputs, isChecked ) {
   }
 }
 
+function resetCheckboxUI() {
+  toggleCheckboxUI( [...listEl.querySelectorAll('input')], false );
+}
+
+function selectCurrentTimerRadio() {
+  timerRadioElList.forEach( radio => {
+
+    if ( Boolean(+radio.value) === bgJS.hasTimer ) {
+      radio.checked = true;
+    }
+  });
+}
 
 // Events
 
@@ -71,11 +92,20 @@ function toggleFolder(inputs) {
 
   chrome.runtime.sendMessage({
     action: 'toggleFolder',
-    folders: folderIDList
-  });
+    folders: folderIDList,
+    responseCallback: updateFolderCounts
+  }, updateFolderCounts );
+
 }
 
+function resetFolders() {
+  bgJS.folderIDs.clear();
+  bgJS.refreshBookmarks();
+  resetCheckboxUI();
+  updateFolderCounts();
+}
 
+// TODO: turn this into a universal event bubbling listener and use for the timer radios
 listEl.addEventListener('click', event => {
 
   let possibleTargets = listEl.querySelectorAll('input');
@@ -101,6 +131,12 @@ listEl.addEventListener('click', event => {
   }
 });
 
+document.querySelector('#action-folders-clear').addEventListener('click', resetFolders);
+timerRadioElList.forEach( radio => {
+  radio.addEventListener('click', event => {
+    bgJS.hasTimer = Boolean( +event.target.value );
+  });
+});
 
 
 /*
@@ -110,3 +146,5 @@ listEl.addEventListener('click', event => {
 
 genFolderList();
 listEl.appendChild(frag);
+updateFolderCounts();
+selectCurrentTimerRadio();

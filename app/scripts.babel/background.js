@@ -16,11 +16,13 @@ let currentTab;
 let countdownID;
 let tabRemovedByExtension;
 let millis;
+let hasTimer = true;
 
 let originalNodeTree;
 let bookmarks = [];
 let folders = [];
 let folderIDs = new Set();
+let currentBookmark;
 
 
 function msToTime(ms) {
@@ -39,7 +41,7 @@ function msToTime(ms) {
 
 // function
 
-function getFolders(nodes, folderArr = folders) {
+function getFolders(nodes = originalNodeTree, folderArr = folders) {
 
   nodes.forEach( (node, index) => {
 
@@ -98,17 +100,25 @@ function refreshBookmarks() {
   }
 }
 
+function getBookmarkTreeAndParse() {
+  chrome.bookmarks.getTree( nodeTree => {
+    originalNodeTree = nodeTree[0].children;
+    getBookmarksAndFolders(originalNodeTree);
+  });
+}
+
 // function orderFolders() {
 // }
 
 function getRandomBookmark() {
 
   let random = Math.floor( Math.random() * bookmarks.length );
+  currentBookmark = bookmarks[random];
 
-  return bookmarks[random];
+  return currentBookmark;
 }
 
-function openBookmark() {
+function setupTimer() {
 
   let timePeriod = millis;
   let initialColor = timePeriod > AMBER_PERIOD ? 'GREEN'
@@ -127,11 +137,6 @@ function openBookmark() {
     }, timePeriod - RED_PERIOD);
   }
 
-  chrome.tabs.create({ url: getRandomBookmark().url }, tab => {
-    console.log(tab);
-    currentTab = tab;
-  });
-
   // Initialise timer
   countdownID = setInterval(function() {
 
@@ -147,16 +152,23 @@ function openBookmark() {
   }, TIME_DECR );
 }
 
+function openBookmark() {
 
+  chrome.tabs.create({ url: currentBookmark.url }, tab => {
+    console.log(tab);
+    currentTab = tab;
+  });
+
+  if (hasTimer) {
+    setupTimer();
+  }
+
+}
 
 chrome.runtime.onInstalled.addListener(details => {
 
   console.log('previousVersion', details.previousVersion);
-
-  chrome.bookmarks.getTree( nodeTree => {
-    originalNodeTree = nodeTree[0].children;
-    getBookmarksAndFolders(originalNodeTree);
-  });
+  getBookmarkTreeAndParse();
 });
 
 chrome.tabs.onRemoved.addListener(tabID => {
@@ -178,7 +190,7 @@ chrome.runtime.onStartup.addListener(function() { // I cannot see when this even
   console.log('runtime.onStartup');
 });
 
-chrome.runtime.onMessage.addListener(request => { /*, sender*/
+chrome.runtime.onMessage.addListener(( request, sender, sendResponse ) => { /*, sender*/
 
   // clean up this switch
   // move the blocks into their own functions outside
@@ -202,20 +214,15 @@ chrome.runtime.onMessage.addListener(request => { /*, sender*/
 
 
     case 'loadBookmarks':
-      chrome.bookmarks.getTree( nodeTree => {
-        originalNodeTree = nodeTree[0].children.children;
-        getBookmarksAndFolders(originalNodeTree);
-      });
+      getBookmarkTreeAndParse();
       break;
 
 
     case 'toggleFolder':
 
-      let {folders} = request;
+      for (let id in request.folders) {
 
-      for (let id in folders) {
-
-        let isSelected = folders[id];
+        let isSelected = request.folders[id];
 
         if ( isSelected ) {
           folderIDs.add(id);
@@ -226,9 +233,15 @@ chrome.runtime.onMessage.addListener(request => { /*, sender*/
       }
 
       refreshBookmarks();
+      sendResponse({ success: true });
 
       break;
   }
 
 });
 
+chrome.bookmarks.onCreated.addListener(getBookmarkTreeAndParse);
+chrome.bookmarks.onRemoved.addListener( id => {
+  folderIDs.delete(id);
+  getBookmarkTreeAndParse();
+});

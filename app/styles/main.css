@@ -1,26 +1,87 @@
 body {
-  width: 270px;
-  padding: 30px;
   font-size: 14px;
-  background: #212229;
-  color: white;
+  background: white;
+  color: black;
+}
+
+#page-popup {
+  width: 160px;
   text-align: center;
 }
 
+h1, h2, h3 {
+  color: #1478A5;
+}
+
+h1, h2 {
+  text-align: left;
+}
+
 h1 {
+  letter-spacing: 0.5px;
+  font-weight: bold;
+}
+
+a {
+  display: block;
+  color: #1478A5;
+  line-height: 1.5rem;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.margin-bottom-0px {
+  margin-bottom: 0;
+}
+
+.margin-top-0px {
   margin-top: 0;
-  color: #ffd75c;
+}
+
+.action {
+  color: #1478A5;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.action--secondary {
+  font-size: 0.75em;
+  color: gray;
+}
+
+.action--secondary:hover {
+  color: black;
+  text-decoration: underline;
+}
+
+#logo {
+  width: 64px;
+  margin-bottom: 1rem;
+}
+
+nav {
+  position: fixed;
+  width: 25%;
+  left: 0;
+  top: 1rem;
+  text-align: center;
+}
+
+section {
+  padding-left: 25%;
 }
 
 #mins {
   width: 50px;
-  margin-top: 1rem;
   line-height: 2em;
   font-size: 1.5rem;
   font-weight: bold;
   text-align: center;
-  background: #ffd75c;
-  color: #212229;
+  background: #1478A5;
+  color: white;
   border: none;
   border-radius: 50%;
   outline: none;
@@ -29,7 +90,7 @@ h1 {
 
 #mins:focus {
   transform: scaleX(1.5) scaleY(1.5);
-  box-shadow: 0 0 0 10px #212229;
+  box-shadow: 0 0 0 10px white;
 }
 
 button {
@@ -41,14 +102,14 @@ button {
   background: none;
   outline: none;
   border: none;
-  color: #4c4c52;
+  color: lightgray;
   font-size: 1.5rem;
   font-weight: bold;
   transition: 0.3s;
 }
 
 .spinner:hover {
-  color: white;
+  color: #1478A5;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -65,34 +126,33 @@ label {
 }
 
 #mins-text {
-  /*color: $orange;*/
+  /*color: $colorMain;*/
   margin-top: 0;
   line-height: 1.5rem;
 }
 
-#get-bookmarks {
-  width: 50%;
-  font-size: 1rem;
+#open {
+  font-size: 0.8rem;
   line-height: 2rem;
-  margin-top: 1rem;
   background: transparent;
-  color: #212229;
+  color: white;
   border: 0;
   outline: none;
-}
-
-#get-bookmarks div {
-  background: #ffd75c;
   transition: 0.2s;
+  min-width: 50%;
 }
 
-#get-bookmarks:hover div {
-  /*letter-spacing: 1px;*/
+#open:hover {
   transform: scaleX(1.1) scaleY(1.1);
 }
 
-#get-bookmarks:focus div {
+#open:focus {
   transform: scaleX(1) scaleY(1);
+}
+
+#open div {
+  background: #1478A5;
+  padding: 0 1rem;
 }
 
 #options-container {
@@ -103,18 +163,7 @@ label {
 }
 
 #options {
-  cursor: pointer;
-  color: gray;
-  line-height: 1rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  float: right;
-  /*text-align: center;*/
-}
-
-#options:hover {
-  color: black;
-  background: white;
+  font-size: 1em;
 }
 
 /*
@@ -131,17 +180,50 @@ ul {
 }
 
 #folder-list label {
+  position: relative;
   line-height: 2em;
   text-align: left;
   margin: 0 auto;
+  padding-left: 2rem;
   cursor: pointer;
 }
 
 #folder-list label:hover {
-  background: white;
-  color: black;
+  background: #1478A5;
+  color: white;
 }
 
 #folder-list input {
-  margin: 0 12px;
+  position: absolute;
+  margin-top: 7px;
+  left: 12px;
+}
+
+.status {
+  font-size: 0.8em;
+}
+
+.status--static {
+  color: lightgray;
+}
+
+.status--static:hover {
+  color: #1478A5;
+}
+
+.status--count {
+  font-weight: bold;
+  background: #1478A5;
+  color: white;
+  padding: 0.25em 0.5em;
+  border-radius: 12px;
+  min-width: 24px;
+  box-sizing: border-box;
+  display: inline-block;
+  text-align: center;
+}
+
+input[type="radio"] {
+  float: left;
+  margin-right: 8px;
 }

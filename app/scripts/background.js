@@ -22,11 +22,13 @@ var currentTab = undefined;
 var countdownID = undefined;
 var tabRemovedByExtension = undefined;
 var millis = undefined;
+var hasTimer = true;
 
 var originalNodeTree = undefined;
 var bookmarks = [];
 var folders = [];
 var folderIDs = new Set();
+var currentBookmark = undefined;
 
 function msToTime(ms) {
   // to seconds
@@ -44,7 +46,8 @@ function msToTime(ms) {
 
 // function
 
-function getFolders(nodes) {
+function getFolders() {
+  var nodes = arguments.length <= 0 || arguments[0] === undefined ? originalNodeTree : arguments[0];
   var folderArr = arguments.length <= 1 || arguments[1] === undefined ? folders : arguments[1];
 
   nodes.forEach(function (node, index) {
@@ -108,17 +111,25 @@ function refreshBookmarks() {
   }
 }
 
+function getBookmarkTreeAndParse() {
+  chrome.bookmarks.getTree(function (nodeTree) {
+    originalNodeTree = nodeTree[0].children;
+    getBookmarksAndFolders(originalNodeTree);
+  });
+}
+
 // function orderFolders() {
 // }
 
 function getRandomBookmark() {
 
   var random = Math.floor(Math.random() * bookmarks.length);
+  currentBookmark = bookmarks[random];
 
-  return bookmarks[random];
+  return currentBookmark;
 }
 
-function openBookmark() {
+function setupTimer() {
 
   var timePeriod = millis;
   var initialColor = timePeriod > AMBER_PERIOD ? 'GREEN' : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
@@ -136,11 +147,6 @@ function openBookmark() {
     }, timePeriod - RED_PERIOD);
   }
 
-  chrome.tabs.create({ url: getRandomBookmark().url }, function (tab) {
-    console.log(tab);
-    currentTab = tab;
-  });
-
   // Initialise timer
   countdownID = setInterval(function () {
 
@@ -154,14 +160,22 @@ function openBookmark() {
   }, TIME_DECR);
 }
 
+function openBookmark() {
+
+  chrome.tabs.create({ url: currentBookmark.url }, function (tab) {
+    console.log(tab);
+    currentTab = tab;
+  });
+
+  if (hasTimer) {
+    setupTimer();
+  }
+}
+
 chrome.runtime.onInstalled.addListener(function (details) {
 
   console.log('previousVersion', details.previousVersion);
-
-  chrome.bookmarks.getTree(function (nodeTree) {
-    originalNodeTree = nodeTree[0].children;
-    getBookmarksAndFolders(originalNodeTree);
-  });
+  getBookmarkTreeAndParse();
 });
 
 chrome.tabs.onRemoved.addListener(function (tabID) {
@@ -184,7 +198,7 @@ chrome.runtime.onStartup.addListener(function () {
   console.log('runtime.onStartup');
 });
 
-chrome.runtime.onMessage.addListener(function (request) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   /*, sender*/
 
   // clean up this switch
@@ -205,18 +219,14 @@ chrome.runtime.onMessage.addListener(function (request) {
       break;
 
     case 'loadBookmarks':
-      chrome.bookmarks.getTree(function (nodeTree) {
-        originalNodeTree = nodeTree[0].children.children;
-        getBookmarksAndFolders(originalNodeTree);
-      });
+      getBookmarkTreeAndParse();
       break;
 
     case 'toggleFolder':
-      var folders = request.folders;
 
-      for (var id in folders) {
+      for (var id in request.folders) {
 
-        var isSelected = folders[id];
+        var isSelected = request.folders[id];
 
         if (isSelected) {
           folderIDs.add(id);
@@ -226,7 +236,14 @@ chrome.runtime.onMessage.addListener(function (request) {
       }
 
       refreshBookmarks();
+      sendResponse({ success: true });
 
       break;
   }
+});
+
+chrome.bookmarks.onCreated.addListener(getBookmarkTreeAndParse);
+chrome.bookmarks.onRemoved.addListener(function (id) {
+  folderIDs.delete(id);
+  getBookmarkTreeAndParse();
 });

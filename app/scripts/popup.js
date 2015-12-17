@@ -1,5 +1,9 @@
 'use strict';
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var bgPage = chrome.extension.getBackgroundPage();
+var bookmarkTitleEl = document.getElementById('bookmark-title');
 var minsInput = document.getElementById('mins');
 
 function minsToMillis(mins) {
@@ -24,9 +28,14 @@ function spinDown() {
   }
 }
 
-function onGetBookmark() {
+function getBookmark() {
+  var bookmark = bgPage.getRandomBookmark();
+  bookmarkTitleEl.textContent = bookmark.title;
+}
+
+function openBookmark() {
   var mins = Math.round(minsInput.value);
-  chrome.extension.getBackgroundPage().mins = minsInput.value;
+  bgPage.mins = minsInput.value;
 
   chrome.runtime.sendMessage({
     action: 'open',
@@ -39,17 +48,22 @@ function onGetBookmark() {
     UI State
     --------
 */
+getBookmark();
 minsInput.value = chrome.extension.getBackgroundPage().mins || minsInput.value;
+[].concat(_toConsumableArray(document.querySelectorAll('.timer-toggle'))).forEach(function (el) {
+  el.style.display = bgPage.hasTimer ? 'block' : 'none'; // toggle timer visibility
+});
 
 /*
     Event Bindings
     --------------
 */
-document.getElementById('mins').addEventListener('blur', sanitizeInput);
+minsInput.addEventListener('blur', sanitizeInput);
 document.getElementById('plus').addEventListener('click', spinUp);
 document.getElementById('minus').addEventListener('click', spinDown);
-document.getElementById('get-bookmarks').addEventListener('click', onGetBookmark);
-document.getElementById('options').addEventListener('click', function () {
+document.getElementById('open').addEventListener('click', openBookmark);
+document.getElementById('get-bookmark').addEventListener('click', getBookmark);
+document.getElementById('options').addEventListener('click', function (event) {
   chrome.runtime.openOptionsPage();
 });
 
