@@ -62,8 +62,8 @@ function getDescendantInputs(parentEl) {
 }
 
 function toggleCheckboxUI( inputs, isChecked ) {
-  for ( let i in inputs ) {
-    inputs[i].checked = isChecked;
+  for ( let j in inputs ) {
+    inputs[j].checked = isChecked;
   }
 }
 

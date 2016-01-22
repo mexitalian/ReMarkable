@@ -12,10 +12,11 @@ const COLORS = {
   GREEN: '#00CC00', AMBER: '#FFC200', RED: '#FF0000'
 };
 
+
 let currentTab = {};
 let countdownID;
 let tabRemovedByExtension;
-let millis;
+let millis = 10000;
 let hasTimer = true;
 
 let originalNodeTree;
@@ -23,6 +24,10 @@ let bookmarks = [];
 let folders = [];
 let folderIDs = new Set();
 let currentBookmark;
+
+
+chrome.storage.sync.set({ millis });
+
 
 
 function msToTime(ms) {
@@ -107,7 +112,15 @@ function getBookmarkTreeAndParse() {
   });
 }
 
-// function orderFolders() {
+function getRandomBookmark() {
+
+  let random = Math.floor( Math.random() * bookmarks.length );
+  return bookmarks[random];
+}
+
+
+// function minsToMillis(mins) {
+//   return mins * 60 * 1000;
 // }
 
 function setupTimer() {
@@ -146,18 +159,13 @@ function setupTimer() {
 
 function openBookmark() {
 
-  chrome.tabs.create({
-    url: currentBookmark.url
-  },
-  tab => {
+  chrome.tabs.create({ url: currentBookmark.url }, tab => {
     console.log(tab);
     currentTab = tab;
   });
 
-  if (hasTimer) {
-    setupTimer();
-  }
-
+  // Inject UI and functionality
+  chrome.tabs.executeScript(null, { file: 'scripts/overlay.js' });
 }
 
 chrome.runtime.onInstalled.addListener(details => {
@@ -232,6 +240,11 @@ chrome.runtime.onMessage.addListener(( request, sender, sendResponse ) => { /*, 
       sendResponse({ success: true });
 
       break;
+
+
+    case 'pageReady':
+      if (hasTimer) { setupTimer(); }
+      break;
   }
 
 });
@@ -241,3 +254,21 @@ chrome.bookmarks.onRemoved.addListener( id => {
   folderIDs.delete(id);
   getBookmarkTreeAndParse();
 });
+
+
+
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+
+  console.log(tab);
+
+  chrome.runtime.sendMessage({
+    action: 'open',
+    bookmark: getRandomBookmark(),
+    millis: millis//, minsToMillis(mins),
+    // mins: mins
+  });
+
+});
+
+
