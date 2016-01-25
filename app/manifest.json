@@ -18,7 +18,11 @@
     "bookmarks",
     "activeTab",
     "storage",
-    "*://*/"
+    "*://*/",
+    "webRequest"
+  ],
+  "web_accessible_resources": [
+    "images/icon-128.png", "images/clock.svg", "images/open_folder.svg", "images/restart.svg", "images/settings.svg"
   ],
   "options_ui": {
     "page": "options.html",
@@ -29,7 +33,7 @@
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
     },
-    "default_title": "ReMark"
+    "default_title": "ReMarkable"
   },
   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }

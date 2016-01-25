@@ -1,0 +1,124 @@
+$prefix: "#remark-ext-";
+
+$color: #1478A5;
+$colorBg: #fff;
+$colorBgTimer: lighten($color, 50%);
+
+$containerWidth: 130px;
+$timerWidth: 10px;
+$logoWidth: 64px;
+$iconWidth: 40px;
+
+$baseFontSize: 14px;
+$fontStack: Arial, 'Helvetica Neue', Helvetica, sans-serif!important;
+
+
+#remark-ext-ui-containter {
+  position: fixed;
+  z-index: 999999999;
+  box-sizing: border-box;
+  width: $containerWidth;
+  height: 100%;
+  padding: ($timerWidth * 2) ($timerWidth * 2) ($timerWidth * 2) ($timerWidth * 3);
+  right: 0;
+  top: 0;
+  background-color: $colorBg;
+  transition: 0.5s;
+  text-align: center;
+  &.ready {
+    transform: translateX($containerWidth - $timerWidth );
+    &:hover {
+      transform: translateX(0);
+    }
+  }
+  * {
+    user-select: none;
+  }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+#remark-ext-logo {
+  display: inline-block;
+  width: $logoWidth;
+  height: $logoWidth;
+  margin: 0 0 40px 5px;
+  // background-color: rgba(255,255,255,0.5);
+  // left: -($logoWidth + 6px);
+  // bottom: 6px;
+}
+
+#remark-ext-configure {
+}
+
+.remark-ext-icon {
+  width: 100%;
+  height: $iconWidth;
+  background-size: 40px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  display: inline-block;
+  transition: 333ms;
+  cursor: pointer;
+  // margin-bottom: 30px;
+  // padding-left: 50px;
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
+.remark-ext-label {
+  margin-bottom: 30px;
+  color: $color;
+  font-size: $baseFontSize;
+  display: inline-block;
+  font-family: $fontStack;
+  text-align: center;
+  max-width: 100%;
+}
+
+#remark-ext-mins-input {
+  border: none;
+  min-width: 20px;
+  text-align: center;
+  color: #1d79a3;
+  font-size: 14px;
+  font-weight: normal;
+  margin-right: 4px;
+  border-bottom: 1px solid #1d79a3;
+  outline: none;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  max-width: 100%;
+  &:focus {
+    border-bottom-width: 2px;
+  }
+}
+
+// #remark-ext
+
+// #remark-ext
+
+
+#remark-ext-timer-outer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: $timerWidth;
+  height: 100%;
+  background-color: $colorBgTimer;
+}
+
+#remark-ext-timer-inner {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: $color;
+  height: 100%;
+  // transition: millis + 'ms'; // the transition duration will be set in JS
+  -webkit-animation-timing-function: 'linear';
+  }

@@ -7,27 +7,24 @@ let currentMillis = today.getMilliseconds()
 
 const TIME_DECR = 1000;
 const AMBER_PERIOD = 120000; // 2 min
-const RED_PERIOD = 60000; // 1 min
+const RED_PERIOD = 600000; // 1 min
 const COLORS = {
   GREEN: '#00CC00', AMBER: '#FFC200', RED: '#FF0000'
 };
-
+const BOOKMARK_EDITOR_URL = 'chrome://bookmarks/#p=/me/profile/folio/lf_'; // works for folder IDs
 
 let currentTab = {};
 let countdownID;
 let tabRemovedByExtension;
 let millis = 10000;
-let hasTimer = true;
+let hasTimer = false;
 
 let originalNodeTree;
 let bookmarks = [];
 let folders = [];
 let folderIDs = new Set();
 let currentBookmark;
-
-
-chrome.storage.sync.set({ millis });
-
+let currentParent;
 
 
 function msToTime(ms) {
@@ -123,9 +120,17 @@ function getRandomBookmark() {
 //   return mins * 60 * 1000;
 // }
 
-function setupTimer() {
+function setupTimer(ms) {
 
-  let timePeriod = millis;
+  ms = ms || millis;
+
+  if (countdownID) {
+    clearInterval(countdownID);
+  }
+
+  chrome.storage.local.set({ millis: ms });
+
+  let timePeriod = ms;
   let initialColor = timePeriod > AMBER_PERIOD ? 'GREEN'
     : timePeriod > RED_PERIOD ? 'AMBER' : 'RED';
 
@@ -157,15 +162,37 @@ function setupTimer() {
   }, TIME_DECR );
 }
 
+function getParentFolder(id) {
+  id = id || currentBookmark.parentId;
+  chrome.bookmarks.get(id, folder => {
+    // console.log(`${BOOKMARK_EDITOR_URL}${folder[0].id}`);
+    // console.log(folder[0].title);
+    currentParent = {
+      chrome: folder[0],
+      bookmarkUrl: `${BOOKMARK_EDITOR_URL}${folder[0].id}`
+    };
+
+    chrome.storage.local.set({ currentParent });
+  });
+}
+
 function openBookmark() {
 
+  currentBookmark = getRandomBookmark();
+
   chrome.tabs.create({ url: currentBookmark.url }, tab => {
-    console.log(tab);
+
     currentTab = tab;
+    chrome.storage.local.set({ currentBookmark });
+
+    // Inject UI and functionality
+    chrome.tabs.insertCSS(null, { file: 'styles/overlay.css' });
+    chrome.tabs.executeScript(null, { file: 'scripts/overlay.js' });
+
+    getParentFolder(currentBookmark.parentId);
+
   });
 
-  // Inject UI and functionality
-  chrome.tabs.executeScript(null, { file: 'scripts/overlay.js' });
 }
 
 chrome.runtime.onInstalled.addListener(details => {
@@ -202,8 +229,8 @@ chrome.runtime.onMessage.addListener(( request, sender, sendResponse ) => { /*, 
 
     case 'open':
 
-      millis = request.millis;
-      currentBookmark = request.bookmark;
+      millis = request.millis || 300000;
+      chrome.storage.sync.set({ millis });
 
       if (currentTab.id)
       {
@@ -238,12 +265,22 @@ chrome.runtime.onMessage.addListener(( request, sender, sendResponse ) => { /*, 
 
       refreshBookmarks();
       sendResponse({ success: true });
-
       break;
-
 
     case 'pageReady':
       if (hasTimer) { setupTimer(); }
+      break;
+
+    case 'setTimer':
+      setupTimer(request.millis);
+        break;
+
+    case 'openSettings':
+      chrome.runtime.openOptionsPage();
+      break;
+
+    case 'gotoBookmarks':
+      chrome.tabs.create({ url: currentParent.bookmarkUrl });
       break;
   }
 
@@ -258,13 +295,10 @@ chrome.bookmarks.onRemoved.addListener( id => {
 
 
 
-chrome.browserAction.onClicked.addListener(function(tab) {
-
-  console.log(tab);
+chrome.browserAction.onClicked.addListener(() => {
 
   chrome.runtime.sendMessage({
     action: 'open',
-    bookmark: getRandomBookmark(),
     millis: millis//, minsToMillis(mins),
     // mins: mins
   });
