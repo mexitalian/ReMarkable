@@ -16,7 +16,7 @@ let frag = document.createDocumentFragment();
 // Dom Generation / Manipulation
 
 function updateFolderCounts(response) {
-  console.log(response);
+  // console.log(response);
   folderCountEl.textContent = bgJS.folderIDs.size || 'all';
   bookmarkCountEl.textContent = bgJS.bookmarks.length;
 }
@@ -29,6 +29,7 @@ function genFolderList( list = bgJS.folders, containerEl = frag ) {
     let label = $new('label');
     let check = $new('input');
     let span = $new('span');
+    let toggle = $new('div');
 
     check.id = `folder-${folder.id}`;
     check.value = folder.id;
@@ -36,12 +37,15 @@ function genFolderList( list = bgJS.folders, containerEl = frag ) {
     check.checked = bgJS.folderIDs.has(folder.id);
 
     span.textContent = folder.title;
+    toggle.className = 'toggle';
+    toggle.textContent = folder.children.length > 0 ? '+' : '';
     label.appendChild(check);
     label.appendChild(span);
+    label.appendChild(toggle);
     li.appendChild(label);
 
 //  recurse and create sub folders
-    if (folder.children) {
+    if (folder.children.length > 0) {
 
       let ul = $new('ul');
 
@@ -64,6 +68,40 @@ function getDescendantInputs(parentEl) {
 function toggleCheckboxUI( inputs, isChecked ) {
   for ( let j in inputs ) {
     inputs[j].checked = isChecked;
+  }
+}
+
+function togglePartialCheckboxUI(input) {
+  // update parent checkboxes to have a .partial class
+  let parent = input.parentNode.parentNode.parentNode.parentNode; // traverse upward to the next li
+  input.className = '';
+
+  while (parent.tagName === 'UL' || parent.tagName === 'LI' || parent.tagName === 'LABEL') {
+
+    let siblings = input.parentNode.parentNode.parentNode.querySelectorAll('li > label > input');
+    let parentContainsSelected;
+
+    if (input.checked) {
+      parentContainsSelected = true;
+    }
+
+    siblings.forEach(sibling => {
+      if (
+        input.id !== sibling.id &&
+        (sibling.checked || sibling.className === 'partial')
+      ) {
+        parentContainsSelected = true;
+        return;
+      }
+    });
+
+    if (
+      parent.tagName == 'LI' &&
+      parent.querySelector('label > input').checked != true
+    ) {
+      parent.querySelector('label > input').className = parentContainsSelected ? 'partial' : '';
+    }
+    parent = parent.parentNode;
   }
 }
 
@@ -105,10 +143,27 @@ function resetFolders() {
   updateFolderCounts();
 }
 
+function expandSubLevel(el) {
+  let ul = el.parentElement.parentElement.querySelector('ul');
+  let style = ul.style.display === '' ? 'block' : ul.style.display === 'block' ? 'none' : 'block';
+
+  ul.style.display = style;
+  el.textContent = el.innerHTML === '+' ? '-' : '+';
+}
+
 // TODO: turn this into a universal event bubbling listener and use for the timer radios
 listEl.addEventListener('click', event => {
 
   let possibleTargets = listEl.querySelectorAll('input');
+  let toggles = listEl.querySelectorAll('.toggle');
+
+  toggles.forEach(toggle => {
+    if (event.target === toggle) {
+      event.preventDefault();
+      event.stopPropagation(); // kill the bubbling
+      expandSubLevel(event.target);
+    }
+  });
 
   for ( let index in possibleTargets )
   {
@@ -123,6 +178,7 @@ listEl.addEventListener('click', event => {
         let inputs = getDescendantInputs(el);
 
         toggleCheckboxUI(inputs, isParentChecked);
+        togglePartialCheckboxUI(el);
         toggleFolder(inputs);
       }
 

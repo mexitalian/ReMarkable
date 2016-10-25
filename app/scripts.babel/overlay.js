@@ -78,7 +78,7 @@ function createIcons() {
       id: 'restart',
       class: 'icon',
       bgSrc: chrome.extension.getURL('images/restart.svg'),
-      onClick: function() { chrome.runtime.sendMessage({action: 'open'}); }
+      onClick: function() { chrome.runtime.sendMessage({action: 'launchMark'}); }
     },
     {
       tagName: 'span',

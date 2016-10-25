@@ -239,6 +239,10 @@ chrome.runtime.onMessage.addListener(( request, sender, sendResponse ) => { /*, 
 
   switch (request.action) {
 
+    case 'launchMark':
+      launchMark();
+      break;
+
     case 'loadBookmarks':
       getBookmarkTreeAndParse();
       break;
@@ -285,8 +289,6 @@ chrome.bookmarks.onRemoved.addListener( id => {
   folderIDs.delete(id);
   getBookmarkTreeAndParse();
 });
-
-
 
 
 chrome.browserAction.onClicked.addListener(function() {

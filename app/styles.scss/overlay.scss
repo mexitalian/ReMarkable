@@ -81,7 +81,15 @@ $fontStack: Arial, 'Helvetica Neue', Helvetica, sans-serif!important;
 }
 
 #remark-ext-mins-input {
-  border: none;
+  margin:0;
+	border:0;
+	padding:0;
+	display:inline-block;
+	vertical-align:middle;
+	white-space:normal;
+	background:none;
+	line-height:1;
+
   min-width: 20px;
   text-align: center;
   color: #1d79a3;

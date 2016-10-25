@@ -1,4 +1,4 @@
-// generated on 2016-09-05 using generator-chrome-extension 0.6.0
+// generated on 2016-09-04 using generator-chrome-extension 0.6.0
 import gulp from 'gulp';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import del from 'del';
@@ -61,7 +61,7 @@ gulp.task('styles', () => {
     .pipe(gulp.dest('app/styles'));
 });
 
-gulp.task('html', ['styles'], () => {
+gulp.task('html',  () => {
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
     .pipe($.sourcemaps.init())
@@ -112,7 +112,6 @@ gulp.task('watch', ['lint', 'babel', 'html'], () => {
   ]).on('change', $.livereload.reload);
 
   gulp.watch('app/scripts.babel/**/*.js', ['lint', 'babel']);
-  gulp.watch('app/styles.scss/**/*.scss', ['styles']);
   gulp.watch('bower.json', ['wiredep']);
 });
 

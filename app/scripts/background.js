@@ -244,6 +244,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
   switch (request.action) {
 
+    case 'launchMark':
+      launchMark();
+      break;
+
     case 'loadBookmarks':
       getBookmarkTreeAndParse();
       break;
