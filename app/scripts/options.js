@@ -28,6 +28,7 @@ function genFolderList() {
   var list = arguments.length <= 0 || arguments[0] === undefined ? bgJS.folders : arguments[0];
   var containerEl = arguments.length <= 1 || arguments[1] === undefined ? frag : arguments[1];
 
+
   list.forEach(function (folder) {
 
     var li = $new('li');

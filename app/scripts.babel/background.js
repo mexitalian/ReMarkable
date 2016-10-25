@@ -195,6 +195,18 @@ function openBookmark() {
 
 }
 
+function launchMark(millis = 300000) {
+  chrome.storage.sync.set({ millis });
+
+  if (currentTab.id) {
+    tabRemovedByExtension = true;
+    chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
+  }
+  else {
+    openBookmark();
+  }
+}
+
 chrome.runtime.onInstalled.addListener(details => {
 
   console.log('previousVersion', details.previousVersion);
@@ -227,27 +239,9 @@ chrome.runtime.onMessage.addListener(( request, sender, sendResponse ) => { /*, 
 
   switch (request.action) {
 
-    case 'open':
-
-      millis = request.millis || 300000;
-      chrome.storage.sync.set({ millis });
-
-      if (currentTab.id)
-      {
-        tabRemovedByExtension = true;
-        chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
-      }
-      else
-      {
-        openBookmark();
-      }
-      break;
-
-
     case 'loadBookmarks':
       getBookmarkTreeAndParse();
       break;
-
 
     case 'toggleFolder':
 
@@ -295,14 +289,6 @@ chrome.bookmarks.onRemoved.addListener( id => {
 
 
 
-chrome.browserAction.onClicked.addListener(() => {
-
-  chrome.runtime.sendMessage({
-    action: 'open',
-    millis: millis//, minsToMillis(mins),
-    // mins: mins
-  });
-
+chrome.browserAction.onClicked.addListener(function() {
+  launchMark(millis); // where are these millis coming from?
 });
-
-

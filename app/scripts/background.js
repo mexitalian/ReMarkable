@@ -1,11 +1,9 @@
-'use strict'
+'use strict';
 
 /*
 let startTime = new Date.now();
 let currentMillis = today.getMilliseconds()
 */
-
-;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -18,17 +16,17 @@ var COLORS = {
 var BOOKMARK_EDITOR_URL = 'chrome://bookmarks/#p=/me/profile/folio/lf_'; // works for folder IDs
 
 var currentTab = {};
-var countdownID = undefined;
-var tabRemovedByExtension = undefined;
+var countdownID = void 0;
+var tabRemovedByExtension = void 0;
 var millis = 10000;
 var hasTimer = false;
 
-var originalNodeTree = undefined;
+var originalNodeTree = void 0;
 var bookmarks = [];
 var folders = [];
 var folderIDs = new Set();
-var currentBookmark = undefined;
-var currentParent = undefined;
+var currentBookmark = void 0;
+var currentParent = void 0;
 
 function msToTime(ms) {
   // to seconds
@@ -49,6 +47,7 @@ function msToTime(ms) {
 function getFolders() {
   var nodes = arguments.length <= 0 || arguments[0] === undefined ? originalNodeTree : arguments[0];
   var folderArr = arguments.length <= 1 || arguments[1] === undefined ? folders : arguments[1];
+
 
   nodes.forEach(function (node, index) {
 
@@ -198,6 +197,19 @@ function openBookmark() {
   });
 }
 
+function launchMark() {
+  var millis = arguments.length <= 0 || arguments[0] === undefined ? 300000 : arguments[0];
+
+  chrome.storage.sync.set({ millis: millis });
+
+  if (currentTab.id) {
+    tabRemovedByExtension = true;
+    chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
+  } else {
+    openBookmark();
+  }
+}
+
 chrome.runtime.onInstalled.addListener(function (details) {
 
   console.log('previousVersion', details.previousVersion);
@@ -231,19 +243,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // move the blocks into their own functions outside
 
   switch (request.action) {
-
-    case 'open':
-
-      millis = request.millis || 300000;
-      chrome.storage.sync.set({ millis: millis });
-
-      if (currentTab.id) {
-        tabRemovedByExtension = true;
-        chrome.tabs.remove(currentTab.id); // destroy previous roulette tab, callback will openBookmark when ready
-      } else {
-          openBookmark();
-        }
-      break;
 
     case 'loadBookmarks':
       getBookmarkTreeAndParse();
@@ -293,10 +292,5 @@ chrome.bookmarks.onRemoved.addListener(function (id) {
 });
 
 chrome.browserAction.onClicked.addListener(function () {
-
-  chrome.runtime.sendMessage({
-    action: 'open',
-    millis: millis //, minsToMillis(mins),
-    // mins: mins
-  });
+  launchMark(millis); // where are these millis coming from?
 });

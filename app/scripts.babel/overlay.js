@@ -83,7 +83,7 @@ function createIcons() {
     {
       tagName: 'span',
       class: 'label',
-      text: 'Get another'
+      text: 'Shuffle'
     },
     {
       id: 'clock',
@@ -112,7 +112,7 @@ function createIcons() {
     {
       tagName: 'label',
       class: 'label',
-      html: `Countdown<br><input type="number" value="5" min="1" max="60" step="1" name="${cssPrefix}mins-input" id="${cssPrefix}mins-input"/>mins`
+      html: `Self destruct<br>in<input type="number" value="5" min="1" max="60" step="1" name="${cssPrefix}mins-input" id="${cssPrefix}mins-input"/>mins`
     },
     {
       id: 'configure',
@@ -123,7 +123,7 @@ function createIcons() {
     {
       tagName: 'span',
       class: 'label',
-      text: 'Edit settings'
+      text: 'Settings'
     }
   ]);
 
@@ -157,6 +157,7 @@ function createUI(millis) {
   // create space on right side of body content
   document.body.style.borderRight = '10px solid transparent';
   document.body.appendChild(container);
+  console.log(container);
 /*
   setTimeout(function() {
     timerInner.style.height = '0%';

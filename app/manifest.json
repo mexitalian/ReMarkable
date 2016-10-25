@@ -1,6 +1,6 @@
 {
   "name": "__MSG_appName__",
-  "version": "0.0.6",
+  "version": "0.1.7",
   "manifest_version": 2,
   "description": "__MSG_appDescription__",
   "icons": {
@@ -15,18 +15,21 @@
     ]
   },
   "permissions": [
+    "tabs",
+    "http://*/*",
+    "https://*/*",
+    "background",
     "bookmarks",
     "activeTab",
     "storage",
-    "*://*/",
-    "webRequest"
+    "webNavigation"
   ],
   "web_accessible_resources": [
     "images/icon-128.png", "images/clock.svg", "images/open_folder.svg", "images/restart.svg", "images/settings.svg"
   ],
   "options_ui": {
     "page": "options.html",
-    "chrome_style": false
+    "chrome_style": true
   },
   "browser_action": {
     "default_icon": {
@@ -34,6 +37,5 @@
       "38": "images/icon-38.png"
     },
     "default_title": "ReMarkable"
-  },
-  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+  }
 }
