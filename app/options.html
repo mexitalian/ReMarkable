@@ -10,24 +10,25 @@
     <!-- endbuild -->
   </head>
   <body>
-
+<!--
     <nav>
         <img id="logo" src="images/icon-128.png" alt="The Bookmarked Icon">
         <a href="#folders" class="action">Folders</a>
         <a href="#timer" class="action">Timer</a>
     </nav>
-
+-->
     <section>
+      <!--
         <h1>Settings</h1>
-
-
         <a id="folders"></a>
-        <h2><span id="status-folder-count" class="status status--count">all</span> Folders</h2>
-        <p>Specify which bookmark folder/s to use or <span id="action-folders-clear" class="link action">clear those selected</span> to use all.</p>
-        <p><span id="status-bookmark-count" class="status status--count"></span> <span class="status status--static">bookmarks in the pool.</span></p>
+        <h2>Folders <span id="status-folder-count" class="status status--count">all</span></h2>
+      -->
+        <p>Select folders or <span id="action-folders-clear" class="link action">including all bookmarks</span>.</p>
+        <span class="status status--static">Folders</span> <span id="status-folder-count" class="status status--count">all</span>
+        <span class="status status--static">Bookmarks</span> <span id="status-bookmark-count" class="status status--count"></span>
         <ul id="folder-list"></ul>
 
-
+        <!--
         <a id="timer"></a>
         <h2>Timer</h2>
         <p>Would you like to close the tab manually or set an auto&ndash;close timer?</p>
@@ -39,6 +40,7 @@
             <input type="radio" name="timer" id="timer-on" value="1" class="action"/>
             <label for="timer-on" class="action" id="timer-on-label">I want to set a tab duration</label>
         </p>
+        -->
     </section>
 
     <!-- build:js scripts/options-vendor.js -->

@@ -1,5 +1,5 @@
 $colorBg: #212229;
-$colorMain: #ffd75c;
+$colorMain: #ffd75c; // get rid of
 
 $colorMain: #1478A5;
 $colorAccent: white;
@@ -88,7 +88,7 @@ nav {
 }
 
 section {
-  padding-left: 25%;
+  // padding-left: 25%;
 }
 
 #mins {
@@ -130,9 +130,9 @@ button {
   }
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
   margin: 0;
 }
 
@@ -195,29 +195,55 @@ label {
 
 ul {
   list-style: none;
-  padding-left: 30px;
+  padding-left: 16px;
+  -webkit-user-select: none;
+}
+
+ul li > ul {
+  display: none;
 }
 
 #folder-list {
   padding: 0;
-  label {
-    position: relative;
-    line-height: 2em;
-    text-align: left;
-    margin: 0 auto;
-    padding-left: 2rem;
-    cursor: pointer;
-    &:hover {
-      background: $colorMain;
-      color: $colorAccent;
-    }
-  }
-  input {
-    position: absolute;
-    margin-top: 7px;
-    left: 12px;
-  }
-  span {}
+}
+
+#folder-list label {
+  position: relative;
+  line-height: 2em;
+  text-align: left;
+  margin: 0 auto;
+  padding-left: 3rem;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+#folder-list label:hover {
+  background: $colorMain;
+  color: white;
+}
+
+#folder-list input {
+  position: absolute;
+  margin-top: 7px;
+  left: 25px;
+}
+/*applied to checkboxes with children selected*/
+#folder-list .partial {
+  box-shadow: 0px 0px 20px #3b99fc;
+}
+
+#folder-list label > .toggle {
+  position: absolute;;
+  left: 0;
+  top: 0;
+  width: 2em;
+  line-height: 2em;
+  text-align: center;
+  color: black;
+}
+
+#folder-list label:hover > .toggle {
+  color: white;
 }
 
 .status {

@@ -1,10 +1,10 @@
 {
   "appName": {
-    "message": "ReMark",
-    "description": "The name of the application"
+    "message": "ReMarkable",
+    "description": "Be reinspired by your bookmarks."
   },
   "appDescription": {
     "message": "Be reinspired by your bookmarks.",
-    "description": "The description of the application"
+    "description": "Bring forgotten Bookmarks back to life and enjoy your favorites in a serendipitous way."
   }
 }
